@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.notFoundListMessage = exports.notFoundMessage = exports.serverErrorMessage = exports.conflictMessage = exports.badRequestStatusCode = exports.serverErrorStatusCode = exports.conflictStatusCode = exports.notFoundErrorStatusCode = void 0;
+exports.notFoundErrorStatusCode = 404;
+exports.conflictStatusCode = 409;
+exports.serverErrorStatusCode = 500;
+exports.badRequestStatusCode = 400;
+const conflictMessage = (item) => `This ${item} already exists.`;
+exports.conflictMessage = conflictMessage;
+exports.serverErrorMessage = 'Something went wrong :(';
+const notFoundMessage = (item) => `This ${item} is not found.`;
+exports.notFoundMessage = notFoundMessage;
+const notFoundListMessage = (item) => `There are no ${item}.`;
+exports.notFoundListMessage = notFoundListMessage;

@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const items_1 = require("../controllers/items");
+const celebrate_1 = require("celebrate");
+const schemaValidator_1 = require("../middlewares/schemaValidator");
+const router = (0, express_1.Router)();
+router.post('/items', (0, celebrate_1.celebrate)(schemaValidator_1.createItemValidationSchema), items_1.createItem);
+router.get('/items', items_1.getItems);
+router.get('/items/:id', (0, celebrate_1.celebrate)(schemaValidator_1.getItemByIdValidationSchema), items_1.getItemById);
+router.delete('/items/:id', (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemValidationSchema), items_1.deleteItem);
+exports.default = router;
