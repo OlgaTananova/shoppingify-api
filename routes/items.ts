@@ -6,12 +6,13 @@ import {
     deleteItemValidationSchema,
     getItemByIdValidationSchema
 } from "../middlewares/schemaValidator";
+import {auth} from "../middlewares/auth";
 
 const router = Router();
 
-router.post('/items', celebrate(createItemValidationSchema), createItem);
-router.get('/items', getItems);
-router.get('/items/:id', celebrate(getItemByIdValidationSchema), getItemById);
-router.delete('/items/:id', celebrate(deleteItemValidationSchema), deleteItem);
+router.post('/items', auth, celebrate(createItemValidationSchema), createItem);
+router.get('/items', auth, getItems);
+router.get('/items/:id', auth, celebrate(getItemByIdValidationSchema), getItemById);
+router.delete('/items/:id', auth, celebrate(deleteItemValidationSchema), deleteItem);
 
 export default router;

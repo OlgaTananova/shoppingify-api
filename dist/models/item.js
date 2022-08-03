@@ -17,6 +17,11 @@ exports.ItemSchema = new mongoose_1.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'category',
         required: true,
+    },
+    owner: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
     }
 });
 exports.ItemModel = (0, mongoose_1.model)('item', exports.ItemSchema);

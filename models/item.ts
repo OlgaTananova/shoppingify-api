@@ -1,13 +1,7 @@
 import {Document,  Schema, Types, model} from "mongoose";
+import {IItem} from "../types";
 
-export interface Item extends Document {
-    name: string,
-    note?: string,
-    image?: string,
-    categoryId: Schema.Types.ObjectId
-}
-
-export const ItemSchema: Schema = new Schema<Item>({
+export const ItemSchema: Schema = new Schema<IItem>({
     name: {
         type: String,
         required: true,
@@ -22,7 +16,12 @@ export const ItemSchema: Schema = new Schema<Item>({
         type: Schema.Types.ObjectId,
         ref: 'category',
         required: true,
+    },
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
     }
 })
 
-export const ItemModel = model<Item>('item', ItemSchema);
+export const ItemModel = model<IItem>('item', ItemSchema);

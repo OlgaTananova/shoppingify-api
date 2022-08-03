@@ -19,29 +19,31 @@ const constants_1 = require("../constants");
 const NotFoundError_1 = __importDefault(require("../errors/NotFoundError"));
 const createItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, note, image, categoryId } = req.body;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
     let existingItem;
     let createdItem;
     try {
-        existingItem = yield item_1.ItemModel.findOne({ name });
+        existingItem = yield item_1.ItemModel.findOne({ name, owner });
         if (existingItem) {
-            return next(new ConflictError_1.default((0, constants_1.conflictMessage)('item')));
+            return next(new ConflictError_1.default(JSON.stringify({ message: (0, constants_1.conflictMessage)('item') })));
         }
         createdItem = yield item_1.ItemModel.create({
-            name, note, image, categoryId
+            name, note, image, categoryId, owner
         });
         res.send(createdItem);
     }
-    catch (e) {
-        res.send(e);
+    catch (err) {
+        next(err);
     }
 });
 exports.createItem = createItem;
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let items;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
     try {
-        items = yield item_1.ItemModel.find({});
+        items = yield item_1.ItemModel.find({ owner });
         if (!items) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundListMessage)('items')));
+            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundListMessage)('items') })));
         }
         res.send(items);
     }
@@ -52,11 +54,12 @@ const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.getItems = getItems;
 const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
     let displayedItem;
     try {
-        displayedItem = yield item_1.ItemModel.findById(id);
+        displayedItem = yield item_1.ItemModel.findOne({ _id: id, owner });
         if (!displayedItem) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('item') })));
         }
         res.send(displayedItem);
     }
@@ -67,11 +70,12 @@ const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.getItemById = getItemById;
 const deleteItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
     let deletedItem;
     try {
-        deletedItem = yield item_1.ItemModel.findByIdAndDelete(id);
+        deletedItem = yield item_1.ItemModel.findOneAndDelete({ _id: id, owner });
         if (!deletedItem) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('item') })));
         }
         res.send(deletedItem);
     }

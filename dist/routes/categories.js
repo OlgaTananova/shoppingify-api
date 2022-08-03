@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const category_1 = require("../controllers/category");
+const categories_1 = require("../controllers/categories");
 const celebrate_1 = require("celebrate");
 const schemaValidator_1 = require("../middlewares/schemaValidator");
+const auth_1 = require("../middlewares/auth");
 const router = (0, express_1.Router)();
-router.post('/categories', (0, celebrate_1.celebrate)(schemaValidator_1.createCategoryValidationSchema), category_1.createCategory);
-router.put('/categories/items', (0, celebrate_1.celebrate)(schemaValidator_1.addItemToCategoryValidationSchema), category_1.addItemToCategory);
-router.get('/categories', category_1.getCategories);
-router.delete('/categories/items', (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromCategoryValidationSchema), category_1.deleteItemFromCategory);
+router.post('/categories', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.createCategoryValidationSchema), categories_1.createCategory);
+router.put('/categories/items', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.addItemToCategoryValidationSchema), categories_1.addItemToCategory);
+router.get('/categories', auth_1.auth, categories_1.getCategories);
+router.delete('/categories/items', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromCategoryValidationSchema), categories_1.deleteItemFromCategory);
 exports.default = router;

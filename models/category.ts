@@ -1,13 +1,7 @@
-import {model, Schema, Types, } from "mongoose";
+import {model, Schema} from "mongoose";
+import {ICategory} from "../types";
 
-
-interface Category extends Document {
-    category: string,
-    items?: Types.DocumentArray<Schema.Types.ObjectId>,
-
-}
-
-const CategorySchema = new Schema<Category>({
+const CategorySchema = new Schema<ICategory>({
     category: {
         type: String,
         required: true,
@@ -17,7 +11,12 @@ const CategorySchema = new Schema<Category>({
         type: [Schema.Types.ObjectId],
         ref: 'item',
         default: []
+    },
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
     }
 });
 
-export const CategoryModel = model<Category>('category', CategorySchema);
+export const CategoryModel = model<ICategory>('category', CategorySchema);

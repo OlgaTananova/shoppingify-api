@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
@@ -35,5 +35,24 @@ exports.getItemByIdValidationSchema = {
 exports.deleteItemValidationSchema = {
     params: celebrate_1.Joi.object().keys({
         id: celebrate_1.Joi.string().hex().length(24).required()
+    })
+};
+exports.createUserValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        name: celebrate_1.Joi.string().required().min(2).max(30),
+        email: celebrate_1.Joi.string().required().email(),
+        password: celebrate_1.Joi.string().required()
+    })
+};
+exports.loginValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        email: celebrate_1.Joi.string().required(),
+        password: celebrate_1.Joi.string().required()
+    })
+};
+exports.updateUserValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        name: celebrate_1.Joi.string().required().min(2).max(30),
+        email: celebrate_1.Joi.string().required().email()
     })
 };

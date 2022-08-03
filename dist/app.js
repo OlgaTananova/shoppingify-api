@@ -19,6 +19,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
 const errorHandler_1 = require("./middlewares/errorHandler");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 const { PORT = 3000 } = process.env;
 function start() {
@@ -39,6 +40,7 @@ start()
     }));
     app.use(express_1.default.json());
     app.use(express_1.default.urlencoded({ extended: true }));
+    app.use((0, cookie_parser_1.default)());
     (0, routes_1.default)(app);
     app.use(errorHandler_1.celebrateErrorHandler);
     app.use(errorHandler_1.generalErrorHandler);

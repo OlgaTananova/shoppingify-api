@@ -5,8 +5,10 @@ import express, {Express, Response, Request} from "express";
 import cors from 'cors';
 import routes from "./routes";
 import {generalErrorHandler, celebrateErrorHandler} from "./middlewares/errorHandler";
+import cookieParser from "cookie-parser";
 
 const app: Express = express();
+
 const { PORT = 3000 } = process.env;
 
 async function start() {
@@ -26,6 +28,7 @@ start()
         }))
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
+        app.use(cookieParser())
         routes(app);
         app.use(celebrateErrorHandler);
         app.use(generalErrorHandler);

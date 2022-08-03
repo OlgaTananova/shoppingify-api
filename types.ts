@@ -1,4 +1,4 @@
-import {Types} from 'mongoose';
+import {Error, Schema, Types} from 'mongoose';
 
 export interface IEditProfile {
     isEditProfile: boolean
@@ -31,15 +31,28 @@ export interface IShoppingListByDate {
 }
 
 export interface IItem {
-    _id: Types.ObjectId,
     name: string,
-    note: string,
-    image: string,
-    categoryId: Types.ObjectId
+    note?: string,
+    image?: string,
+    categoryId: Types.ObjectId,
+    owner: Types.ObjectId,
 }
 
 export interface ICategory {
     category: string,
-    _id: Types.ObjectId,
-    items: IItem[]
+    items: Types.ObjectId[]
+    owner: Types.ObjectId,
+}
+
+export interface IUser {
+    name: string,
+    email: string,
+    password: string,
+}
+
+// Errors
+
+export interface ErrorWithStatus extends Error {
+    statusCode: number,
+    code?: number,
 }
