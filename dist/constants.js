@@ -5,7 +5,7 @@ exports.notFoundErrorStatusCode = 404;
 exports.conflictStatusCode = 409;
 exports.serverErrorStatusCode = 500;
 exports.badRequestStatusCode = 400;
-exports.unauthorizedStatusCode = 409;
+exports.unauthorizedStatusCode = 401;
 exports.createdStatusCode = 201;
 const conflictMessage = (item) => `This ${item} already exists.`;
 exports.conflictMessage = conflictMessage;

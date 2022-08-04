@@ -10,11 +10,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
    try {
       const user = await UserModel.findUserByCredentials(email, password);
       if (!user) {
-         return new UnauthorizedError(JSON.stringify({message: unauthorizedMessage}));
+         return next(new UnauthorizedError(JSON.stringify({message: unauthorizedMessage})));
       }
       const matched = await bcrypt.compare(password, user.password);
       if (!matched) {
-         return new UnauthorizedError(JSON.stringify({message: unauthorizedMessage}));
+         return next(new UnauthorizedError(JSON.stringify({message: unauthorizedMessage})));
       }
       const token = jwt.sign({_id: user._id}, 'some-secret-key',  {expiresIn: '7d'})
       res.cookie('jwt', token, {
@@ -27,7 +27,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
    } catch (err) {
       next(err);
    }
-   };
+};
 
 export const logout = (req: Request, res: Response) => {
       res.clearCookie('jwt').send({message: tokenDeleted});

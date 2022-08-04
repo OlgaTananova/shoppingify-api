@@ -10,14 +10,14 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
     let existingCategory;
     let createdCategory;
     try {
-        existingCategory = await CategoryModel.findOne({category, owner});
+        existingCategory = await CategoryModel.findOne({owner, category});
         if (existingCategory) {
             return next(new ConflictError(JSON.stringify({message: conflictMessage('category')})));
         }
         createdCategory = await CategoryModel.create({category, owner});
         res.send(createdCategory);
-    } catch (e) {
-        res.send(e);
+    } catch (err) {
+       next(err);
     }
 }
 

@@ -3,7 +3,7 @@ export const notFoundErrorStatusCode = 404;
 export const conflictStatusCode = 409;
 export const serverErrorStatusCode = 500;
 export const badRequestStatusCode = 400;
-export const unauthorizedStatusCode = 409;
+export const unauthorizedStatusCode = 401;
 export const createdStatusCode = 201;
 
 

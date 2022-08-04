@@ -23,15 +23,15 @@ const createCategory = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     let existingCategory;
     let createdCategory;
     try {
-        existingCategory = yield category_1.CategoryModel.findOne({ category, owner });
+        existingCategory = yield category_1.CategoryModel.findOne({ owner, category });
         if (existingCategory) {
             return next(new ConflictError_1.default(JSON.stringify({ message: (0, constants_1.conflictMessage)('category') })));
         }
         createdCategory = yield category_1.CategoryModel.create({ category, owner });
         res.send(createdCategory);
     }
-    catch (e) {
-        res.send(e);
+    catch (err) {
+        next(err);
     }
 });
 exports.createCategory = createCategory;

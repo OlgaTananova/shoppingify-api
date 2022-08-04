@@ -17,11 +17,13 @@ const item_1 = require("../models/item");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
 const NotFoundError_1 = __importDefault(require("../errors/NotFoundError"));
+const category_1 = require("../models/category");
 const createItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, note, image, categoryId } = req.body;
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     let existingItem;
     let createdItem;
+    let updatedCategory;
     try {
         existingItem = yield item_1.ItemModel.findOne({ name, owner });
         if (existingItem) {
@@ -30,7 +32,11 @@ const createItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         createdItem = yield item_1.ItemModel.create({
             name, note, image, categoryId, owner
         });
-        res.send(createdItem);
+        updatedCategory = yield category_1.CategoryModel.findOneAndUpdate({ _id: createdItem.categoryId, owner }, { $addToSet: { items: createdItem._id } }, { new: true });
+        if (!updatedCategory) {
+            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('category') })));
+        }
+        res.send({ item: createdItem, category: updatedCategory });
     }
     catch (err) {
         next(err);
@@ -72,12 +78,17 @@ const deleteItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     const { id } = req.params;
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     let deletedItem;
+    let updatedCategory;
     try {
         deletedItem = yield item_1.ItemModel.findOneAndDelete({ _id: id, owner });
         if (!deletedItem) {
             return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('item') })));
         }
-        res.send(deletedItem);
+        updatedCategory = yield category_1.CategoryModel.findOneAndUpdate({ '_id': deletedItem.categoryId, 'owner': deletedItem.owner }, { $pull: { 'items': deletedItem._id } }, { new: true });
+        if (!updatedCategory) {
+            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('category') })));
+        }
+        res.send({ item: deletedItem, category: updatedCategory });
     }
     catch (err) {
         next(err);
