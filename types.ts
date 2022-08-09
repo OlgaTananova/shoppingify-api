@@ -1,29 +1,18 @@
 import {Error, Schema, Types} from 'mongoose';
 
-export interface IEditProfile {
-    isEditProfile: boolean
-}
+// Shopping List
 
-export interface IItemInfo {
-    isItemInfoOpen: boolean
-}
-
-export interface IShopping {
-    isAddItemFormOpened: boolean,
-    isEditShoppingList: boolean,
-    isShoppingListEmpty: boolean,
-}
-export interface IShoppingCategory {
-    name: string,
-    items: [string, number][]
-}
 export interface IShoppingList {
-    id: string,
     heading: string,
-    date: Date,
-    owner: string,
-    categories: IShoppingCategory[],
-    status: string
+    date: string,
+    owner: Types.ObjectId,
+    categories?: [
+        {
+            itemId: string,
+            quantity: number
+        }
+    ]
+    status: 'completed' | 'cancelled' | 'active'
 }
 
 export interface IShoppingListByDate {

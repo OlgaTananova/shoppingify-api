@@ -23,11 +23,11 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const user = yield user_1.UserModel.findUserByCredentials(email, password);
         if (!user) {
-            return next(new UnauthorizedError_1.default(JSON.stringify({ message: constants_1.unauthorizedMessage })));
+            return next(new UnauthorizedError_1.default(constants_1.inCorrectEmailOrPasswordMessage));
         }
         const matched = yield bcrypt_1.default.compare(password, user.password);
         if (!matched) {
-            return next(new UnauthorizedError_1.default(JSON.stringify({ message: constants_1.unauthorizedMessage })));
+            return next(new UnauthorizedError_1.default(constants_1.inCorrectEmailOrPasswordMessage));
         }
         const token = jsonwebtoken_1.default.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
         res.cookie('jwt', token, {

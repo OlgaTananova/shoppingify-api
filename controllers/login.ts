@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import {UserModel} from "../models/user";
 import {Response, Request, NextFunction} from "express";
 import UnauthorizedError from "../errors/UnauthorizedError";
-import {tokenDeleted, tokenSendMessage, unauthorizedMessage} from "../constants";
+import {inCorrectEmailOrPasswordMessage, tokenDeleted, tokenSendMessage, unauthorizedMessage} from "../constants";
 import bcrypt from "bcrypt";
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
@@ -10,11 +10,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
    try {
       const user = await UserModel.findUserByCredentials(email, password);
       if (!user) {
-         return next(new UnauthorizedError(JSON.stringify({message: unauthorizedMessage})));
+         return next(new UnauthorizedError(inCorrectEmailOrPasswordMessage));
       }
       const matched = await bcrypt.compare(password, user.password);
       if (!matched) {
-         return next(new UnauthorizedError(JSON.stringify({message: unauthorizedMessage})));
+         return next(new UnauthorizedError(inCorrectEmailOrPasswordMessage));
       }
       const token = jwt.sign({_id: user._id}, 'some-secret-key',  {expiresIn: '7d'})
       res.cookie('jwt', token, {
