@@ -18,23 +18,27 @@ const shoppingListSchema = new mongoose_1.Schema({
         ref: 'user',
         required: true,
     },
-    categories: [{
+    items: [{
+            itemId: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: 'item',
+                required: true,
+                unique: true,
+            },
             categoryId: {
                 type: mongoose_1.Schema.Types.ObjectId,
-                ref: 'category'
+                ref: 'category',
+                required: true,
             },
-            items: [{
-                    itemId: {
-                        type: mongoose_1.Schema.Types.ObjectId,
-                        ref: 'item',
-                        required: true
-                    },
-                    quantity: {
-                        type: Number,
-                        default: 1,
-                        required: true
-                    }
-                }]
+            quantity: {
+                type: Number,
+                default: 1,
+                required: true
+            },
+            status: {
+                type: String,
+                default: 'pending'
+            }
         }],
     status: {
         type: String,

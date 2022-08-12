@@ -20,24 +20,28 @@ const shoppingListSchema = new Schema<IShoppingListSchema>({
         ref: 'user',
         required: true,
     },
-    categories: [{
-        categoryId: {
-            type: Schema.Types.ObjectId,
-            ref: 'category'
-        },
-        items: [{
+    items: [{
             itemId: {
                 type: Schema.Types.ObjectId,
                 ref: 'item',
-                required: true
+                required: true,
+                unique: true,
+            },
+            categoryId: {
+                type: Schema.Types.ObjectId,
+                ref: 'category',
+                required: true,
             },
             quantity: {
                 type: Number,
                 default: 1,
                 required: true
+            },
+            status: {
+                type: String,
+                default: 'pending'
             }
-        }]
-    }],
+        }],
     status: {
        type: String,
         required: true,

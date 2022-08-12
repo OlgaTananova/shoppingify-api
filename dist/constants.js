@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inCorrectEmailOrPasswordMessage = exports.notUniqueEmailConflictMessage = exports.userProfileUpdated = exports.tokenDeleted = exports.tokenSendMessage = exports.unauthorizedMessage = exports.notFoundListMessage = exports.notFoundMessage = exports.serverErrorMessage = exports.conflictMessage = exports.createdStatusCode = exports.unauthorizedStatusCode = exports.badRequestStatusCode = exports.serverErrorStatusCode = exports.conflictStatusCode = exports.notFoundErrorStatusCode = void 0;
+exports.incorrectValueForShoppingListMessage = exports.inCorrectEmailOrPasswordMessage = exports.notUniqueEmailConflictMessage = exports.userProfileUpdated = exports.tokenDeleted = exports.tokenSendMessage = exports.unauthorizedMessage = exports.notFoundListMessage = exports.notFoundMessage = exports.serverErrorMessage = exports.conflictMessage = exports.createdStatusCode = exports.unauthorizedStatusCode = exports.badRequestStatusCode = exports.serverErrorStatusCode = exports.conflictStatusCode = exports.notFoundErrorStatusCode = void 0;
 exports.notFoundErrorStatusCode = 404;
 exports.conflictStatusCode = 409;
 exports.serverErrorStatusCode = 500;
@@ -20,3 +20,4 @@ exports.tokenDeleted = 'Token was deleted.';
 exports.userProfileUpdated = 'User\'s profile was successfully updated';
 exports.notUniqueEmailConflictMessage = 'User with this email already exists.';
 exports.inCorrectEmailOrPasswordMessage = 'You typed incorrect email or password. Please, try again.';
+exports.incorrectValueForShoppingListMessage = 'You tried to add already existed item or category to your active shopping list.';

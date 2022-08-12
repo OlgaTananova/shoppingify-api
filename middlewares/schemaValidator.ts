@@ -69,5 +69,23 @@ export const createShoppingListValidationSchema = {
         categoryId: Joi.string().hex().length(24).required(),
         itemId: Joi.string().hex().length(24).required(),
     })
+};
+
+export const addItemToShoppingListValidationSchema = {
+    body: Joi.object().keys({
+        categoryId: Joi.string().hex().length(24).required(),
+        itemId: Joi.string().hex().length(24).required(),
+        shoppingListId: Joi.string().hex().length(24).required(),
+        quantity: Joi.number(),
+        status: Joi.string().allow('pending', 'completed'),
+    })
+}
+
+
+export const deleteItemFromSLValidationSchema = {
+    body: Joi.object().keys({
+        itemId: Joi.string().hex().length(24).required(),
+        shoppingListId: Joi.string().hex().length(24).required(),
+    })
 }
 

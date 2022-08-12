@@ -12,14 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const shoppingList_1 = require("../models/shoppingList");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
 const NotFoundError_1 = __importDefault(require("../errors/NotFoundError"));
 const getShoppingLists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    // const {owner } = req.body;
     let shoppingLists;
     try {
         shoppingLists = yield shoppingList_1.ShoppingListModel.find({ owner });
@@ -34,8 +33,8 @@ const getShoppingLists = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 });
 exports.getShoppingLists = getShoppingLists;
 const createShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const { categoryId, itemId, owner } = req.body;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { categoryId, itemId } = req.body;
     let activeShoppingList;
     try {
         activeShoppingList = yield shoppingList_1.ShoppingListModel.findOne({ status: 'active' });
@@ -44,11 +43,9 @@ const createShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0,
         }
         activeShoppingList = yield shoppingList_1.ShoppingListModel.create({
             owner: owner,
-            categories: {
+            items: {
+                itemId: itemId,
                 categoryId: categoryId,
-                items: [{
-                        itemId: itemId
-                    }]
             }
         });
         res.send(activeShoppingList);
@@ -58,3 +55,47 @@ const createShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.createShoppingList = createShoppingList;
+const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, categoryId, itemId, quantity = 1, status = 'pending' } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({ _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $ne: itemId } }, {
+            $push: { items: {
+                    itemId: itemId,
+                    categoryId: categoryId,
+                    quantity: quantity,
+                    status: status
+                }
+            }
+        }, { new: true });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default(constants_1.incorrectValueForShoppingListMessage));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.addItemToShoppingList = addItemToShoppingList;
+const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, itemId } = req.body;
+    let deletedItem;
+    try {
+        deletedItem = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+        }, {
+            $pull: { items: {
+                    itemId: itemId
+                }
+            }
+        }, { new: true });
+        res.send(deletedItem);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.deleteItemFromShoppingList = deleteItemFromShoppingList;

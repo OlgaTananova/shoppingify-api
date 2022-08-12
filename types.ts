@@ -6,12 +6,13 @@ export interface IShoppingList {
     heading: string,
     date: string,
     owner: Types.ObjectId,
-    categories?: [
+    items?: [
         {
             itemId: string,
-            quantity: number
-        }
-    ]
+            categoryId: string,
+            quantity?: number,
+            status?: 'completed' | 'pending'
+        }],
     status: 'completed' | 'cancelled' | 'active'
 }
 

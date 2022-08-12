@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const schemaValidator_1 = require("../middlewares/schemaValidator");
 const shoppingLists_1 = require("../controllers/shoppingLists");
 const auth_1 = require("../middlewares/auth");
+const celebrate_1 = require("celebrate");
 const router = (0, express_1.Router)();
-router.post('/shoppinglists', 
-// auth, celebrate(createShoppingListValidationSchema),
-shoppingLists_1.createShoppingList);
+router.post('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.createShoppingListValidationSchema), shoppingLists_1.createShoppingList);
 router.get('/shoppinglists', auth_1.auth, shoppingLists_1.getShoppingLists);
+router.put('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.addItemToShoppingListValidationSchema), shoppingLists_1.addItemToShoppingList);
+router.delete('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromSLValidationSchema), shoppingLists_1.deleteItemFromShoppingList);
 exports.default = router;
