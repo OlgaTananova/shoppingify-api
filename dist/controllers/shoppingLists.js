@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const shoppingList_1 = require("../models/shoppingList");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
@@ -92,6 +92,9 @@ const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0,
                 }
             }
         }, { new: true });
+        if (!deletedItem) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+        }
         res.send(deletedItem);
     }
     catch (err) {
@@ -99,3 +102,75 @@ const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0,
     }
 });
 exports.deleteItemFromShoppingList = deleteItemFromShoppingList;
+const changeItemQuantity = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, itemId, quantity } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+        }, {
+            $set: {
+                'items.$.quantity': quantity
+            }
+        }, {
+            new: true
+        });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeItemQuantity = changeItemQuantity;
+const changeItemStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, itemId, status } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+        }, {
+            $set: {
+                'items.$.status': status
+            }
+        }, {
+            new: true
+        });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeItemStatus = changeItemStatus;
+const changeSLHeading = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, heading } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: {
+                'heading': heading
+            }
+        }, {
+            new: true
+        });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeSLHeading = changeSLHeading;

@@ -9,5 +9,8 @@ const router = (0, express_1.Router)();
 router.post('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.createShoppingListValidationSchema), shoppingLists_1.createShoppingList);
 router.get('/shoppinglists', auth_1.auth, shoppingLists_1.getShoppingLists);
 router.put('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.addItemToShoppingListValidationSchema), shoppingLists_1.addItemToShoppingList);
+router.patch('/shoppinglists/updqty', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemQtyInSLValidationSchema), shoppingLists_1.changeItemQuantity);
+router.patch('/shoppinglists/updstatus', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemStatusInSLValidationSchema), shoppingLists_1.changeItemStatus);
+router.patch('/shoppinglists/updheading', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSLHeadingValidationSchema), shoppingLists_1.changeSLHeading);
 router.delete('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromSLValidationSchema), shoppingLists_1.deleteItemFromShoppingList);
 exports.default = router;

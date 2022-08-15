@@ -4,11 +4,9 @@ import ConflictError from "../errors/ConflictError";
 import {
     conflictMessage,
     incorrectValueForShoppingListMessage,
-    notFoundListMessage,
-    notFoundMessage
+    notFoundListMessage, notFoundMessage,
 } from "../constants";
 import NotFoundError from "../errors/NotFoundError";
-import notFoundError from "../errors/NotFoundError";
 
 export const getShoppingLists = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
@@ -50,7 +48,7 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     const {shoppingListId, categoryId, itemId, quantity = 1, status = 'pending'} = req.body;
     let updatedShoppingList;
-    try{
+    try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate(
             {_id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$ne: itemId}},
             {
@@ -85,7 +83,82 @@ export const deleteItemFromShoppingList = async (req: Request, res: Response, ne
                 }
             }
         }, {new: true});
+        if (!deletedItem) {
+            return next(new NotFoundError(notFoundMessage('item')));
+        }
         res.send(deletedItem);
+    } catch(err) {
+        next(err);
+    }
+}
+
+export const changeItemQuantity = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {shoppingListId, itemId, quantity} = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+        }, {
+            $set: {
+                'items.$.quantity': quantity
+            }
+        }, {
+            new: true
+        })
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundMessage('item')));
+        }
+        res.send(updatedShoppingList);
+
+    } catch(err) {
+        next(err);
+    }
+}
+
+export const changeItemStatus = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {shoppingListId, itemId, status} = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+        }, {
+            $set: {
+                'items.$.status': status
+            }
+        }, {
+            new: true
+        })
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundMessage('item')));
+        }
+        res.send(updatedShoppingList);
+
+    } catch(err) {
+        next(err);
+    }
+}
+
+export const changeSLHeading = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {shoppingListId, heading} = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: {
+                'heading': heading
+            }
+        }, {
+            new: true
+        })
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundMessage('active shopping list')));
+        }
+        res.send(updatedShoppingList);
+
     } catch(err) {
         next(err);
     }

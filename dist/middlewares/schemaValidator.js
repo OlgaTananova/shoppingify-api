@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
@@ -75,5 +75,25 @@ exports.deleteItemFromSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+    })
+};
+exports.updateItemQtyInSLValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+        quantity: celebrate_1.Joi.number().required()
+    })
+};
+exports.updateItemStatusInSLValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+        status: celebrate_1.Joi.string().allow('pending', 'completed')
+    })
+};
+exports.updateSLHeadingValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+        heading: celebrate_1.Joi.string().required(),
     })
 };
