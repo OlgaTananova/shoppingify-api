@@ -108,6 +108,13 @@ export const updateItemStatusInSLValidationSchema = {
 export const updateSLHeadingValidationSchema = {
     body: Joi.object().keys({
         shoppingListId: Joi.string().hex().length(24).required(),
-        heading: Joi.string().required(),
+        heading: Joi.string().min(2).max(30).required(),
+    })
+}
+
+export const updateSLStatusValidationSchema = {
+    body: Joi.object().keys({
+        shoppingListId: Joi.string().hex().length(24).required(),
+        status: Joi.string().required().allow('completed', 'cancelled')
     })
 }

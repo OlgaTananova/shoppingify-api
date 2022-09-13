@@ -1,7 +1,7 @@
 import {CategoryModel} from "../models/category";
 import {Response, Request, NextFunction} from "express";
 import ConflictError from "../errors/ConflictError";
-import {conflictMessage, notFoundListMessage, notFoundMessage} from "../constants";
+import {conflictMessage, notFoundListMessage} from "../constants";
 import NotFoundError from "../errors/NotFoundError";
 
 export const createCategory = async (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
         createdCategory = await CategoryModel.create({category, owner});
         res.send(createdCategory);
     } catch (err) {
-       next(err);
+        next(err);
     }
 }
 

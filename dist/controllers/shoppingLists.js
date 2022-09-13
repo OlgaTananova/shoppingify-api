@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const shoppingList_1 = require("../models/shoppingList");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
@@ -37,7 +37,7 @@ const createShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0,
     const { categoryId, itemId } = req.body;
     let activeShoppingList;
     try {
-        activeShoppingList = yield shoppingList_1.ShoppingListModel.findOne({ status: 'active' });
+        activeShoppingList = yield shoppingList_1.ShoppingListModel.findOne({ owner: owner, status: 'active' });
         if (activeShoppingList) {
             return next(new ConflictError_1.default((0, constants_1.conflictMessage)('active shopping list')));
         }
@@ -174,3 +174,23 @@ const changeSLHeading = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.changeSLHeading = changeSLHeading;
+const changeSLStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, status } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: { 'status': status }
+        }, { new: true });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundListMessage)('active shopping list')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeSLStatus = changeSLStatus;

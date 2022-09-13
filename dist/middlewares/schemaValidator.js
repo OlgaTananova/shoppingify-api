@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
@@ -94,6 +94,12 @@ exports.updateItemStatusInSLValidationSchema = {
 exports.updateSLHeadingValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
-        heading: celebrate_1.Joi.string().required(),
+        heading: celebrate_1.Joi.string().min(2).max(30).required(),
+    })
+};
+exports.updateSLStatusValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+        status: celebrate_1.Joi.string().required().allow('completed', 'cancelled')
     })
 };

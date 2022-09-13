@@ -5,6 +5,7 @@ export const serverErrorStatusCode = 500;
 export const badRequestStatusCode = 400;
 export const unauthorizedStatusCode = 401;
 export const createdStatusCode = 201;
+export const publicKey = 'some-secret-key';
 
 
 export const conflictMessage = (item: string) =>  `The ${item} already exists.`;

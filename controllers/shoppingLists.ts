@@ -27,7 +27,7 @@ export const createShoppingList = async (req: Request, res: Response, next: Next
     const {categoryId, itemId} = req.body;
     let activeShoppingList;
     try{
-        activeShoppingList = await ShoppingListModel.findOne({status: 'active'});
+        activeShoppingList = await ShoppingListModel.findOne({owner: owner, status: 'active'});
         if (activeShoppingList) {
             return next(new ConflictError(conflictMessage('active shopping list')));
         }
@@ -164,3 +164,22 @@ export const changeSLHeading = async (req: Request, res: Response, next: NextFun
     }
 }
 
+export const changeSLStatus = async (req: Request, res: Response, next: NextFunction) =>  {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {shoppingListId, status} = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: {'status': status}
+        }, {new: true});
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundListMessage('active shopping list')));
+        }
+        res.send(updatedShoppingList);
+    } catch (err) {
+
+        next(err);
+    }
+}

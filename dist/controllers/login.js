@@ -18,6 +18,8 @@ const user_1 = require("../models/user");
 const UnauthorizedError_1 = __importDefault(require("../errors/UnauthorizedError"));
 const constants_1 = require("../constants");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const { NODE_ENV, JWT_SECRET } = process.env;
+const secretKey = NODE_ENV === 'production' && JWT_SECRET || constants_1.publicKey;
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
@@ -29,7 +31,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         if (!matched) {
             return next(new UnauthorizedError_1.default(constants_1.inCorrectEmailOrPasswordMessage));
         }
-        const token = jsonwebtoken_1.default.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+        const token = jsonwebtoken_1.default.sign({ _id: user._id }, secretKey, { expiresIn: '7d' });
         res.cookie('jwt', token, {
             httpOnly: true,
             maxAge: 6.048e+8,

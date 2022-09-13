@@ -1,4 +1,4 @@
-import {Error, Schema, Types} from 'mongoose';
+import {Error, Types} from 'mongoose';
 
 // Shopping List
 
@@ -14,10 +14,6 @@ export interface IShoppingList {
             status?: 'completed' | 'pending'
         }],
     status: 'completed' | 'cancelled' | 'active'
-}
-
-export interface IShoppingListByDate {
-    [key: string]: IShoppingList[]
 }
 
 export interface IItem {

@@ -11,7 +11,7 @@ const shoppingListSchema = new mongoose_1.Schema({
     date: {
         type: String,
         required: true,
-        default: new Date(Date.now()).toLocaleString()
+        default: new Date(Date.now()).toISOString()
     },
     owner: {
         type: mongoose_1.Schema.Types.ObjectId,

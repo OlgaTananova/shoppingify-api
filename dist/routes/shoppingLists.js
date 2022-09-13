@@ -12,5 +12,6 @@ router.put('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValid
 router.patch('/shoppinglists/updqty', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemQtyInSLValidationSchema), shoppingLists_1.changeItemQuantity);
 router.patch('/shoppinglists/updstatus', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemStatusInSLValidationSchema), shoppingLists_1.changeItemStatus);
 router.patch('/shoppinglists/updheading', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSLHeadingValidationSchema), shoppingLists_1.changeSLHeading);
+router.patch('/shoppinglists/updslstatus', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSLStatusValidationSchema), shoppingLists_1.changeSLStatus);
 router.delete('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromSLValidationSchema), shoppingLists_1.deleteItemFromShoppingList);
 exports.default = router;

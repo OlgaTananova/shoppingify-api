@@ -13,7 +13,7 @@ const shoppingListSchema = new Schema<IShoppingListSchema>({
     date: {
        type: String,
         required: true,
-        default: new Date(Date.now()).toLocaleString()
+        default: new Date(Date.now()).toISOString()
     },
     owner: {
        type: Schema.Types.ObjectId,

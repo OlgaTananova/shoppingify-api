@@ -84,7 +84,10 @@ const deleteItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         if (!deletedItem) {
             return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('item') })));
         }
-        updatedCategory = yield category_1.CategoryModel.findOneAndUpdate({ '_id': deletedItem.categoryId, 'owner': deletedItem.owner }, { $pull: { 'items': deletedItem._id } }, { new: true });
+        updatedCategory = yield category_1.CategoryModel.findOneAndUpdate({
+            '_id': deletedItem.categoryId,
+            'owner': deletedItem.owner
+        }, { $pull: { 'items': deletedItem._id } }, { new: true });
         if (!updatedCategory) {
             return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('category') })));
         }

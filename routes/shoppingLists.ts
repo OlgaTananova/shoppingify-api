@@ -4,13 +4,13 @@ import {
     createShoppingListValidationSchema,
     deleteItemFromSLValidationSchema,
     updateItemQtyInSLValidationSchema,
-    updateItemStatusInSLValidationSchema, updateSLHeadingValidationSchema
+    updateItemStatusInSLValidationSchema, updateSLHeadingValidationSchema, updateSLStatusValidationSchema
 } from '../middlewares/schemaValidator';
 import {
     createShoppingList,
     getShoppingLists,
     addItemToShoppingList,
-    deleteItemFromShoppingList, changeItemQuantity, changeItemStatus, changeSLHeading
+    deleteItemFromShoppingList, changeItemQuantity, changeItemStatus, changeSLHeading, changeSLStatus
 } from '../controllers/shoppingLists';
 import {auth} from "../middlewares/auth";
 import {celebrate} from "celebrate";
@@ -25,5 +25,6 @@ router.put('/shoppinglists',auth, celebrate(addItemToShoppingListValidationSchem
 router.patch('/shoppinglists/updqty',auth, celebrate(updateItemQtyInSLValidationSchema), changeItemQuantity);
 router.patch('/shoppinglists/updstatus', auth, celebrate(updateItemStatusInSLValidationSchema), changeItemStatus);
 router.patch('/shoppinglists/updheading', auth, celebrate(updateSLHeadingValidationSchema), changeSLHeading);
+router.patch('/shoppinglists/updslstatus', auth, celebrate(updateSLStatusValidationSchema), changeSLStatus);
 router.delete('/shoppinglists', auth, celebrate(deleteItemFromSLValidationSchema), deleteItemFromShoppingList);
 export default router;
