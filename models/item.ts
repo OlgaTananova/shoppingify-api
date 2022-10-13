@@ -1,4 +1,4 @@
-import {Document,  Schema, Types, model} from "mongoose";
+import {Schema, model} from "mongoose";
 import {IItem} from "../types";
 
 export const ItemSchema: Schema = new Schema<IItem>({

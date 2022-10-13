@@ -26,9 +26,8 @@ const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         res.status(constants_1.createdStatusCode).send({ name, email });
     }
     catch (err) {
-        // @ts-ignore
         if (err.code === 11000) {
-            return next(new ConflictError_1.default(JSON.stringify({ message: (0, constants_1.conflictMessage)('user') })));
+            return next(new ConflictError_1.default((0, constants_1.conflictMessage)('user')));
         }
         next(err);
     }
@@ -40,7 +39,7 @@ const getCurrentUser = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         user = yield user_1.UserModel.findById(id);
         if (!user) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('user') })));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('user')));
         }
         res.send({ name: user.name, email: user.email });
     }
@@ -56,14 +55,13 @@ const updateUserProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     try {
         updatedUser = yield user_1.UserModel.findByIdAndUpdate(id, { name, email }, { new: true });
         if (!updatedUser) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('user') })));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('user')));
         }
         res.send({ message: constants_1.userProfileUpdated, name: updatedUser.name, email: updatedUser.email });
     }
     catch (err) {
-        // @ts-ignore
         if (err.code === 11000) {
-            return next(new ConflictError_1.default(JSON.stringify({ message: constants_1.notUniqueEmailConflictMessage })));
+            return next(new ConflictError_1.default(constants_1.notUniqueEmailConflictMessage));
         }
         next(err);
     }

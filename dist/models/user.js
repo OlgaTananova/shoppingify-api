@@ -27,7 +27,7 @@ const userSchema = new mongoose_1.Schema({
         select: false,
     }
 });
-userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield this.findOne({ email }).select('+password');
         return user;

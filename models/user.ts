@@ -24,7 +24,7 @@ const userSchema = new Schema<IUserSchema>({
     }
 });
 
-userSchema.statics.findUserByCredentials = async function findUserByCredentials (email, password)
+userSchema.statics.findUserByCredentials = async function findUserByCredentials (email)
 : Promise<IUserSchema> {
     const user = await this.findOne({email}).select('+password');
     return user;
