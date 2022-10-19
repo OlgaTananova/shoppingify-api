@@ -4,7 +4,7 @@
   "description": "Pet project with an app to create shopping lists ",
   "main": "dist/app.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "start": "node dist/server.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
     "lint": "eslint . --ext .ts",
