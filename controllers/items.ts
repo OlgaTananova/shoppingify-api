@@ -12,18 +12,21 @@ export const createItem = async (req: Request, res: Response, next: NextFunction
     let createdItem;
     let updatedCategory;
     try {
-        existingItem = await ItemModel.findOne({name, owner})
-        if (existingItem) {
-            return next(new ConflictError(JSON.stringify({message: conflictMessage('item')})));
+        updatedCategory = await CategoryModel.findOne({_id: categoryId, owner});
+        if (!updatedCategory) {
+            return next(new NotFoundError(notFoundMessage('category')));
         }
+        existingItem = await ItemModel.findOne({name, owner})
+
+        if (existingItem) {
+            return next(new ConflictError(conflictMessage('item')));
+        }
+
         createdItem = await ItemModel.create({
             name, note, image, categoryId, owner
-        })
+        });
         updatedCategory = await CategoryModel.findOneAndUpdate({_id: createdItem.categoryId, owner},
-            {$addToSet: {items: createdItem._id}}, {new: true})
-        if (!updatedCategory) {
-            return next(new NotFoundError(JSON.stringify({message: notFoundMessage('category')})));
-        }
+            {$addToSet: {items: createdItem._id}}, {new: true});
         res.send({item: createdItem, category: updatedCategory});
     } catch (err) {
         next(err);
@@ -36,7 +39,7 @@ export const getItems = async (req: Request, res: Response, next: NextFunction) 
     try {
         items = await ItemModel.find({owner});
         if (!items) {
-            return next(new NotFoundError(JSON.stringify({message: notFoundListMessage('items')})));
+            return next(new NotFoundError(notFoundListMessage('items')));
         }
         res.send(items);
     } catch (err) {
@@ -51,7 +54,7 @@ export const getItemById = async (req: Request, res: Response, next: NextFunctio
     try {
         displayedItem = await ItemModel.findOne({_id: id, owner});
         if (!displayedItem) {
-            return next(new NotFoundError(JSON.stringify({message: notFoundMessage('item')})));
+            return next(new NotFoundError(notFoundMessage('item')));
         }
         res.send(displayedItem);
     } catch (err) {
@@ -67,7 +70,7 @@ export const deleteItem = async (req: Request, res: Response, next: NextFunction
     try {
         deletedItem = await ItemModel.findOneAndDelete({_id: id, owner});
         if (!deletedItem) {
-            return next(new NotFoundError(JSON.stringify({message: notFoundMessage('item')})));
+            return next(new NotFoundError(notFoundMessage('item')));
         }
         updatedCategory = await CategoryModel.findOneAndUpdate({
                 '_id': deletedItem.categoryId,
@@ -75,7 +78,7 @@ export const deleteItem = async (req: Request, res: Response, next: NextFunction
             },
             {$pull: {'items': deletedItem._id}}, {new: true});
         if (!updatedCategory) {
-            return next(new NotFoundError(JSON.stringify({message: notFoundMessage('category')})));
+            return next(new NotFoundError(notFoundMessage('category')));
         }
         res.send({item: deletedItem, category: updatedCategory});
     } catch (err) {

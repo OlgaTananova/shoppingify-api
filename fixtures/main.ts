@@ -12,3 +12,9 @@ export async function createAnotherUser ({name, email, password}: {name: string,
     const anotherUser = UserModel.create({name, email, password: hash});
     return anotherUser;
 }
+
+export let category = {category: 'veggies'};
+export let item =  {name: 'tomato', note: 'Tomato is actually a berry', image: 'none', categoryId: ''};
+export let item2 = {name: 'Potato', categoryId: '' };
+export let notFoundItemId = "62ec0d71a1e7179a512fc2fd";
+export let invalidItemId = 'jggfgdffd';

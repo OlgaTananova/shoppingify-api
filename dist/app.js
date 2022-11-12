@@ -14,16 +14,6 @@ const logger_1 = require("./middlewares/logger");
 const helmet_1 = __importDefault(require("helmet"));
 const limiter_1 = require("./middlewares/limiter");
 const app = (0, express_1.default)();
-// const { PORT = 3000, MONGO_URI } = process.env;
-// async function start() {
-//    await mongoose.connect(MONGO_URI || 'mongodb://localhost:27017/shoppingify_dev');
-//       app.listen(PORT, () => {
-//         console.log(`App listening on PORT ${PORT}`);
-//       });
-// }
-//
-// start()
-//     .then(()=>{
 app.use((0, cors_1.default)({
     origin: ['http://localhost:3001',
         'http://localhost:3000'
@@ -40,8 +30,4 @@ app.use((0, cookie_parser_1.default)());
 app.use(logger_1.errorLogger);
 app.use(errorHandler_1.celebrateErrorHandler);
 app.use(errorHandler_1.generalErrorHandler);
-// })
-// .catch((e)=>{
-//   console.log(e)
-// });
 exports.default = app;

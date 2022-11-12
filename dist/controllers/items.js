@@ -25,17 +25,18 @@ const createItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     let createdItem;
     let updatedCategory;
     try {
+        updatedCategory = yield category_1.CategoryModel.find({ categoryId, owner });
+        if (!updatedCategory) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('category')));
+        }
         existingItem = yield item_1.ItemModel.findOne({ name, owner });
         if (existingItem) {
-            return next(new ConflictError_1.default(JSON.stringify({ message: (0, constants_1.conflictMessage)('item') })));
+            return next(new ConflictError_1.default((0, constants_1.conflictMessage)('item')));
         }
         createdItem = yield item_1.ItemModel.create({
             name, note, image, categoryId, owner
         });
         updatedCategory = yield category_1.CategoryModel.findOneAndUpdate({ _id: createdItem.categoryId, owner }, { $addToSet: { items: createdItem._id } }, { new: true });
-        if (!updatedCategory) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('category') })));
-        }
         res.send({ item: createdItem, category: updatedCategory });
     }
     catch (err) {
@@ -49,7 +50,7 @@ const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     try {
         items = yield item_1.ItemModel.find({ owner });
         if (!items) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundListMessage)('items') })));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundListMessage)('items')));
         }
         res.send(items);
     }

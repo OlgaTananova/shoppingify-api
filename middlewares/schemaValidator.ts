@@ -81,7 +81,6 @@ export const addItemToShoppingListValidationSchema = {
     })
 }
 
-
 export const deleteItemFromSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),

@@ -14,7 +14,7 @@ export const getShoppingLists = async (req: Request, res: Response, next: NextFu
    try {
        shoppingLists = await ShoppingListModel.find({owner});
        if (!shoppingLists) {
-           return next(new NotFoundError(notFoundListMessage('shoppingLists')));
+           return next(new NotFoundError(notFoundListMessage('shopping lists')));
        }
        res.send(shoppingLists)
    } catch(err) {
