@@ -39,6 +39,7 @@ const shoppingListSchema = new Schema<IShoppingListSchema>({
             },
             status: {
                 type: String,
+                enum: ['pending', 'completed'],
                 default: 'pending'
             }
         }],

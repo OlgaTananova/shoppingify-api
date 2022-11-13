@@ -100,7 +100,7 @@ export const updateItemStatusInSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
-        status: Joi.string().allow('pending', 'completed')
+        status: Joi.string().required().valid('pending', 'completed')
     })
 }
 
@@ -114,6 +114,6 @@ export const updateSLHeadingValidationSchema = {
 export const updateSLStatusValidationSchema = {
     body: Joi.object().keys({
         shoppingListId: Joi.string().hex().length(24).required(),
-        status: Joi.string().required().allow('completed', 'cancelled')
+        status: Joi.string().required().valid('completed', 'cancelled')
     })
 }

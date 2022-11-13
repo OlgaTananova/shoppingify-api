@@ -9,6 +9,7 @@ let categoryId: string;
 let itemId: string;
 let itemId2: string;
 let shoppingListId: string;
+let cookie: {'Cookie': string};
 
 describe('Testing shopping lists endpoints', ()=>{
     beforeAll(async () => {
@@ -16,7 +17,8 @@ describe('Testing shopping lists endpoints', ()=>{
         const data = {name: 'user', email: "123@test.com", password: "123"};
         await createAnotherUser(data);
         token = await auth({email: data.email, password: data.password});
-        const response = await request(app).post('/categories').send(category).set({"Cookie": `jwt=${token}`});
+        cookie = {"Cookie": `jwt=${token}`};
+        const response = await request(app).post('/categories').send(category).set(cookie);
         categoryId = response.body._id;
         item.categoryId = categoryId;
         item2.categoryId = categoryId;
@@ -45,19 +47,68 @@ describe('Testing shopping lists endpoints', ()=>{
         expect(response.body).toEqual({message: `The active shopping list already exists.` });
     });
 
-    test('Successfully getting the list of all the shopping lists', async ()=> {
+    test('Successfully getting all shopping lists', async ()=> {
         const response = await request(app).get('/shoppinglists').set({"Cookie": `jwt=${token}`});
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
     });
 
     test('Successfully adding a new item to the active shopping list', async ()=>{
-        const response = await request(app).put('/shoppinglists').send({
-            shoppingListId: shoppingListId, categoryId: item2.categoryId, itemId: itemId2}
-        ).set({"Cookie": `jwt=${token}`});
+        const data = {shoppingListId: shoppingListId, categoryId: item2.categoryId, itemId: itemId2}
+        const response = await request(app).put('/shoppinglists').send(data).set({"Cookie": `jwt=${token}`});
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('items');
-    })
+    });
+
+    test('Throwing 404 error if the active shopping list is not found', async ()=>{
+        const data = {shoppingListId: '62ec0d71a1e7179a512fc2fd', categoryId: item2.categoryId, itemId: itemId2};
+        const response = await request(app).put('/shoppinglists').send(data).set({"Cookie": `jwt=${token}`});
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({message: 'The active shopping list is not found.'});
+    });
+
+    test('Successfully changing quantity of the item in the shopping list', async ()=>{
+        const data = {shoppingListId: shoppingListId, itemId: itemId, quantity: 3};
+        const response = await request(app).patch('/shoppinglists/updqty').send(data).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('heading');
+    });
+
+    test('Throwing 404 error if a user tries to update the quantity of the item that is not in the SL', async ()=>{
+        const data = {shoppingListId: shoppingListId, itemId: '62ec0d71a1e7179a512fc2fd', quantity: 2};
+        const response = await request(app).patch('/shoppinglists/updqty').send(data).set(cookie);
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({message: 'The active shopping list or item is not found.'});
+    });
+
+    test('Successfully updating the status of the item in the SL', async ()=>{
+        const data = {shoppingListId: shoppingListId, itemId: itemId, status: 'completed'};
+        const response = await request(app).patch('/shoppinglists/updstatus').send(data).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('heading');
+    });
+
+    test('Throwing 400 error if the user tries to update the item in the SL with an invalid status', async ()=>{
+        const data = {shoppingListId: shoppingListId, itemId: itemId, status: 'jghgh'};
+        const response = await request(app).patch('/shoppinglists/updstatus').send(data).set(cookie);
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({ message: '"status" must be one of [pending, completed]' });
+    });
+
+    test('Successfully updating the active shopping list heading', async ()=>{
+        const data = {shoppingListId: shoppingListId, heading: 'Grocery'};
+        const response = await request(app).patch('/shoppinglists/updheading').send(data).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('heading');
+    });
+
+    test('Throwing 400 error if the user tries to update the SL with an invalid heading', async ()=>{
+        const data = {shoppingListId: shoppingListId, heading: 'G'};
+        const response = await request(app).patch('/shoppinglists/updheading').send(data).set(cookie);
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({ message: '"heading" length must be at least 2 characters long' });
+    });
+
     afterAll(async () => {
         await mongoose.connection.db.dropCollection('users');
         await mongoose.connection.db.dropCollection('categories');
