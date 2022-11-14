@@ -174,7 +174,7 @@ export const changeSLStatus = async (req: Request, res: Response, next: NextFunc
             $set: {'status': status}
         }, {new: true});
         if (!updatedShoppingList) {
-            return next(new NotFoundError(notFoundListMessage('active shopping list')));
+            return next(new NotFoundError(notFoundMessage('active shopping list')));
         }
         res.send(updatedShoppingList);
     } catch (err) {

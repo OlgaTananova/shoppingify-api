@@ -22,47 +22,47 @@ describe('Testing shopping lists endpoints', ()=>{
         categoryId = response.body._id;
         item.categoryId = categoryId;
         item2.categoryId = categoryId;
-        const requestFirstItem = await request(app).post('/items').send(item).set({"Cookie": `jwt=${token}`});
+        const requestFirstItem = await request(app).post('/items').send(item).set(cookie);
         itemId = requestFirstItem.body.item._id;
-        const requestSecondItem = await request(app).post('/items').send(item2).set({"Cookie": `jwt=${token}`});
+        const requestSecondItem = await request(app).post('/items').send(item2).set(cookie);
         itemId2 = requestSecondItem.body.item._id;
     });
 
     test('Throwing 400 error if a user tries to create a new shopping list with invalid itemId', async () => {
-        const response = await request(app).post('/shoppinglists').send({itemId: 'jghghgh', categoryId: item.categoryId}).set({"Cookie": `jwt=${token}`});
+        const response = await request(app).post('/shoppinglists').send({itemId: 'jghghgh', categoryId: item.categoryId}).set(cookie);
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('message');
     });
 
     test('Successfully create a new shopping list', async ()=>{
-        const response = await request(app).post('/shoppinglists').send({itemId, categoryId: item.categoryId}).set({"Cookie": `jwt=${token}`});
+        const response = await request(app).post('/shoppinglists').send({itemId, categoryId: item.categoryId}).set(cookie);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('heading');
         shoppingListId = response.body._id;
     });
 
     test('Throwing 409 error if a user tries to create another active shopping list', async () => {
-        const response = await request(app).post('/shoppinglists').send({itemId, categoryId: item.categoryId}).set({"Cookie": `jwt=${token}`});
+        const response = await request(app).post('/shoppinglists').send({itemId, categoryId: item.categoryId}).set(cookie);
         expect(response.status).toBe(409);
         expect(response.body).toEqual({message: `The active shopping list already exists.` });
     });
 
     test('Successfully getting all shopping lists', async ()=> {
-        const response = await request(app).get('/shoppinglists').set({"Cookie": `jwt=${token}`});
+        const response = await request(app).get('/shoppinglists').set(cookie);
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
     });
 
     test('Successfully adding a new item to the active shopping list', async ()=>{
         const data = {shoppingListId: shoppingListId, categoryId: item2.categoryId, itemId: itemId2}
-        const response = await request(app).put('/shoppinglists').send(data).set({"Cookie": `jwt=${token}`});
+        const response = await request(app).put('/shoppinglists').send(data).set(cookie);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('items');
     });
 
     test('Throwing 404 error if the active shopping list is not found', async ()=>{
         const data = {shoppingListId: '62ec0d71a1e7179a512fc2fd', categoryId: item2.categoryId, itemId: itemId2};
-        const response = await request(app).put('/shoppinglists').send(data).set({"Cookie": `jwt=${token}`});
+        const response = await request(app).put('/shoppinglists').send(data).set(cookie);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({message: 'The active shopping list is not found.'});
     });
@@ -107,6 +107,34 @@ describe('Testing shopping lists endpoints', ()=>{
         const response = await request(app).patch('/shoppinglists/updheading').send(data).set(cookie);
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ message: '"heading" length must be at least 2 characters long' });
+    });
+
+    test('Successfully deleting the item from the shopping list', async ()=>{
+        const data = {shoppingListId: shoppingListId, itemId: itemId};
+        const response = await request(app).delete('/shoppinglists').send(data).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('_id', shoppingListId);
+    });
+
+    test('Throwing 404 error if the user tries to delete the not existing item from the SL', async () =>{
+        const data = {shoppingListId: shoppingListId, itemId: itemId};
+        const response = await request(app).delete('/shoppinglists').send(data).set(cookie);
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual( { message: 'The item is not found.' });
+    });
+
+    test('Successfully updating the shopping list status', async ()=>{
+        const data = {shoppingListId: shoppingListId, status: 'completed'};
+        const response = await request(app).patch('/shoppinglists/updslstatus').send(data).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('status', 'completed');
+    });
+
+    test('Throwing 404 error if the user tries to update the status of the non-active SL', async ()=>{
+        const data = {shoppingListId: shoppingListId, status: 'completed'};
+        const response = await request(app).patch('/shoppinglists/updslstatus').send(data).set(cookie);
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({ message: 'The active shopping list is not found.' });
     });
 
     afterAll(async () => {
