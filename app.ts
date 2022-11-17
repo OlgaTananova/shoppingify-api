@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import mongoose from "mongoose";
 import express, {Express} from "express";
 import cors from 'cors';
 import routes from "./routes";
@@ -14,7 +13,8 @@ const app: Express = express();
 
 app.use(cors({
     origin: ['http://localhost:3001',
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'https://olgatananova.github.io/shoppingify'
     ],
     credentials: true,
 }));
