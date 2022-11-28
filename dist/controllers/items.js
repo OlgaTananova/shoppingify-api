@@ -25,7 +25,7 @@ const createItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     let createdItem;
     let updatedCategory;
     try {
-        updatedCategory = yield category_1.CategoryModel.find({ categoryId, owner });
+        updatedCategory = yield category_1.CategoryModel.findOne({ _id: categoryId, owner });
         if (!updatedCategory) {
             return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('category')));
         }
@@ -66,7 +66,7 @@ const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     try {
         displayedItem = yield item_1.ItemModel.findOne({ _id: id, owner });
         if (!displayedItem) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('item') })));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
         }
         res.send(displayedItem);
     }
@@ -83,14 +83,14 @@ const deleteItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     try {
         deletedItem = yield item_1.ItemModel.findOneAndDelete({ _id: id, owner });
         if (!deletedItem) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('item') })));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
         }
         updatedCategory = yield category_1.CategoryModel.findOneAndUpdate({
             '_id': deletedItem.categoryId,
             'owner': deletedItem.owner
         }, { $pull: { 'items': deletedItem._id } }, { new: true });
         if (!updatedCategory) {
-            return next(new NotFoundError_1.default(JSON.stringify({ message: (0, constants_1.notFoundMessage)('category') })));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('category')));
         }
         res.send({ item: deletedItem, category: updatedCategory });
     }

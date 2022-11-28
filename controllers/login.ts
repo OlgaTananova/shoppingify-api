@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: __dirname+'/.env' });
 import jwt from 'jsonwebtoken';
 import {UserModel} from "../models/user";
 import {Response, Request, NextFunction} from "express";
@@ -10,7 +12,8 @@ import {
 } from "../constants";
 import bcrypt from "bcrypt";
 
-const {NODE_ENV, JWT_SECRET} = process.env;
+let NODE_ENV: string = process.env["NODE_ENV"] || '';
+let JWT_SECRET: string | undefined = process.env["JWT_SECRET"];
 
 const secretKey: string = NODE_ENV === 'production' && JWT_SECRET || publicKey;
 
@@ -30,7 +33,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             httpOnly: true,
             maxAge: 6.048e+8,
             sameSite: 'none',
-            secure: true,
+            secure: false,
         });
         res.send({message: tokenSendMessage});
     } catch (err) {

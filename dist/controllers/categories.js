@@ -19,7 +19,7 @@ const constants_1 = require("../constants");
 const NotFoundError_1 = __importDefault(require("../errors/NotFoundError"));
 const createCategory = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { category } = req.body;
-    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const owner = (req['user'] && typeof req['user'] === 'object') && req['user']._id;
     let existingCategory;
     let createdCategory;
     try {

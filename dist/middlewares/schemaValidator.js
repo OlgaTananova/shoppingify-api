@@ -1,22 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.deleteItemFromCategoryValidationSchema = exports.addItemToCategoryValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         category: celebrate_1.Joi.string().min(2).max(30).required()
-    })
-};
-exports.addItemToCategoryValidationSchema = {
-    body: celebrate_1.Joi.object().keys({
-        _id: celebrate_1.Joi.string().hex().length(24).required(),
-        categoryId: celebrate_1.Joi.string().hex().length(24).required()
-    })
-};
-exports.deleteItemFromCategoryValidationSchema = {
-    body: celebrate_1.Joi.object().keys({
-        _id: celebrate_1.Joi.string().hex().length(24).required(),
-        categoryId: celebrate_1.Joi.string().hex().length(24).required()
     })
 };
 exports.createItemValidationSchema = {
@@ -88,7 +76,7 @@ exports.updateItemStatusInSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
-        status: celebrate_1.Joi.string().allow('pending', 'completed')
+        status: celebrate_1.Joi.string().required().valid('pending', 'completed')
     })
 };
 exports.updateSLHeadingValidationSchema = {
@@ -100,6 +88,6 @@ exports.updateSLHeadingValidationSchema = {
 exports.updateSLStatusValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
-        status: celebrate_1.Joi.string().required().allow('completed', 'cancelled')
+        status: celebrate_1.Joi.string().required().valid('completed', 'cancelled')
     })
 };

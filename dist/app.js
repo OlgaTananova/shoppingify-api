@@ -16,7 +16,11 @@ const limiter_1 = require("./middlewares/limiter");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: ['http://localhost:3001',
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'https://olgatananova.github.io',
+        'http://shoppingify.info',
+        'https://shoppingify.info',
+        'http://192.168.1.109:3000'
     ],
     credentials: true,
 }));

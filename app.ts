@@ -14,7 +14,10 @@ const app: Express = express();
 app.use(cors({
     origin: ['http://localhost:3001',
         'http://localhost:3000',
-        'https://olgatananova.github.io/shoppingify'
+        'https://olgatananova.github.io',
+        'http://shoppingify.info',
+        'https://shoppingify.info',
+        'http://192.168.1.109:3000'
     ],
     credentials: true,
 }));

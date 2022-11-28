@@ -23,7 +23,7 @@ const getShoppingLists = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     try {
         shoppingLists = yield shoppingList_1.ShoppingListModel.find({ owner });
         if (!shoppingLists) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundListMessage)('shoppingLists')));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundListMessage)('shopping lists')));
         }
         res.send(shoppingLists);
     }
@@ -70,7 +70,7 @@ const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void
             }
         }, { new: true });
         if (!updatedShoppingList) {
-            return next(new NotFoundError_1.default(constants_1.incorrectValueForShoppingListMessage));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list')));
         }
         res.send(updatedShoppingList);
     }
@@ -117,7 +117,7 @@ const changeItemQuantity = (req, res, next) => __awaiter(void 0, void 0, void 0,
             new: true
         });
         if (!updatedShoppingList) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list or item')));
         }
         res.send(updatedShoppingList);
     }
@@ -185,7 +185,7 @@ const changeSLStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             $set: { 'status': status }
         }, { new: true });
         if (!updatedShoppingList) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundListMessage)('active shopping list')));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list')));
         }
         res.send(updatedShoppingList);
     }

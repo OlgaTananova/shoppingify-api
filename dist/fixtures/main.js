@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.item = exports.category = exports.createAnotherUser = exports.auth = void 0;
+exports.invalidId = exports.randomId = exports.item2 = exports.item = exports.category = exports.user = exports.createAnotherUser = exports.auth = void 0;
 const user_1 = require("../models/user");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -32,5 +32,9 @@ function createAnotherUser({ name, email, password }) {
     });
 }
 exports.createAnotherUser = createAnotherUser;
+exports.user = { name: 'user', email: "123@test.com", password: "123" };
 exports.category = { category: 'veggies' };
 exports.item = { name: 'tomato', note: 'Tomato is actually a berry', image: 'none', categoryId: '' };
+exports.item2 = { name: 'Potato', categoryId: '' };
+exports.randomId = "62ec0d71a1e7179a512fc2fd";
+exports.invalidId = 'jggfgdffd';
