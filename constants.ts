@@ -18,3 +18,4 @@ export const tokenDeleted = 'Token was deleted.';
 export const userProfileUpdated = 'User\'s profile was successfully updated.';
 export const notUniqueEmailConflictMessage = 'User with this email already exists.';
 export const inCorrectEmailOrPasswordMessage = 'You typed incorrect email or password. Please, try again.';
+export const notUniqueItemErrorMessage = 'You tried to add the item which is already in the shopping list.';

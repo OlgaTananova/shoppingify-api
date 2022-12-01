@@ -3,7 +3,7 @@ import {ShoppingListModel} from '../models/shoppingList';
 import ConflictError from "../errors/ConflictError";
 import {
     conflictMessage,
-    notFoundListMessage, notFoundMessage,
+    notFoundListMessage, notFoundMessage, notUniqueItemErrorMessage,
 } from "../constants";
 import NotFoundError from "../errors/NotFoundError";
 
@@ -61,7 +61,7 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
             },
             {new: true});
         if (!updatedShoppingList) {
-            return next (new NotFoundError(notFoundMessage('active shopping list')));
+            return next (new ConflictError(notUniqueItemErrorMessage));
         }
         res.send(updatedShoppingList);
     } catch(err) {

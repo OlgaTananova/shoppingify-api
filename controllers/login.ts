@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             httpOnly: true,
             maxAge: 6.048e+8,
             sameSite: 'none',
-            secure: false,
+            secure: true,
         });
         res.send({message: tokenSendMessage});
     } catch (err) {
