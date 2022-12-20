@@ -71,6 +71,7 @@ describe('Testing items endpoints', () => {
         expect(response.body).toEqual({ message: '"id" must only contain hexadecimal characters' });
     }));
     test('Successfully deleting the item', () => __awaiter(void 0, void 0, void 0, function* () {
+        yield (0, supertest_1.default)(app_1.default).post('/shoppinglists').send({ itemId: main_1.item._id, categoryId: main_1.item.categoryId }).set(cookies);
         const response = yield (0, supertest_1.default)(app_1.default).del(`/items/${main_1.item._id}`).set(cookies);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('item._id', main_1.item._id);
@@ -80,10 +81,22 @@ describe('Testing items endpoints', () => {
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ message: 'The item is not found.' });
     }));
+    test('Successfully updating item', () => __awaiter(void 0, void 0, void 0, function* () {
+        const data = { name: main_1.item.name, categoryId: main_1.item.categoryId };
+        const newCategory = { category: 'fruits' };
+        const responseFromCategory = yield (0, supertest_1.default)(app_1.default).post('/categories').send(newCategory).set(cookies);
+        const updatedData = { name: "apples", image: 'none', note: "none", categoryId: responseFromCategory.body._id };
+        const responseItem = yield (0, supertest_1.default)(app_1.default).post('/items').send(data).set(cookies);
+        yield (0, supertest_1.default)(app_1.default).post('/shoppinglists').send({ itemId: responseItem.body.item._id, categoryId: responseItem.body.item.categoryId }).set(cookies);
+        const response = yield (0, supertest_1.default)(app_1.default).patch(`/items/${responseItem.body.item._id}`).send(updatedData).set(cookies);
+        expect(response.body.updatedItem.name).toBe(updatedData.name);
+        expect(response.body.updatedItem.categoryId).toBe(updatedData.categoryId);
+    }));
 });
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield mongoose_1.default.connection.db.dropCollection('users');
     yield mongoose_1.default.connection.db.dropCollection('categories');
+    yield mongoose_1.default.connection.db.dropCollection('shoppinglists');
     yield mongoose_1.default.connection.db.dropCollection('items');
     yield mongoose_1.default.disconnect();
 }));

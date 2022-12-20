@@ -70,7 +70,7 @@ const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void
             }
         }, { new: true });
         if (!updatedShoppingList) {
-            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list')));
+            return next(new ConflictError_1.default(constants_1.notUniqueItemErrorMessage));
         }
         res.send(updatedShoppingList);
     }

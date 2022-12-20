@@ -14,7 +14,7 @@ beforeAll(async () => {
     cookies = {"Cookie": `jwt=${token}`};
     const responseFromCategory = await request(app).post('/categories').send(category).set(cookies);
     item.categoryId = responseFromCategory.body._id;
-});
+   });
 
 describe('Testing items endpoints', () => {
 
@@ -68,9 +68,11 @@ describe('Testing items endpoints', () => {
     });
 
     test('Successfully deleting the item', async () => {
+        await request(app).post('/shoppinglists').send({itemId: item._id, categoryId: item.categoryId}).set(cookies);
         const response = await request(app).del(`/items/${item._id}`).set(cookies);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('item._id', item._id);
+
     });
 
     test('Throwing 404 error if a user tries to delete an item not found in the base', async () => {
@@ -79,11 +81,22 @@ describe('Testing items endpoints', () => {
         expect(response.body).toEqual({message: 'The item is not found.'});
     });
 
+    test('Successfully updating item', async () => {
+        const data = {name: item.name, categoryId: item.categoryId};
+        const newCategory = {category: 'fruits'};
+        const responseFromCategory = await request(app).post('/categories').send(newCategory).set(cookies);
+        const updatedData = {name: "apples", image: 'none', note: "none", categoryId: responseFromCategory.body._id};
+        const responseItem = await request(app).post('/items').send(data).set(cookies);
+        await request(app).post('/shoppinglists').send({itemId: responseItem.body.item._id, categoryId: responseItem.body.item.categoryId}).set(cookies);
+        const response = await request(app).patch(`/items/${responseItem.body.item._id}`).send(updatedData).set(cookies);
+        expect(response.body.updatedItem.name).toBe(updatedData.name);
+        expect(response.body.updatedItem.categoryId).toBe(updatedData.categoryId);
+    });
 });
-
 afterAll(async () => {
     await mongoose.connection.db.dropCollection('users');
     await mongoose.connection.db.dropCollection('categories');
+    await mongoose.connection.db.dropCollection('shoppinglists')
     await mongoose.connection.db.dropCollection('items');
     await mongoose.disconnect();
 });

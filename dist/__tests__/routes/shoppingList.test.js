@@ -66,11 +66,11 @@ describe('Testing shopping lists endpoints', () => {
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('items');
     }));
-    test('Throwing 404 error if the active shopping list is not found', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('Throwing 409 error if the user tried to add already existed item to the SL ', () => __awaiter(void 0, void 0, void 0, function* () {
         const data = { shoppingListId: '62ec0d71a1e7179a512fc2fd', categoryId: main_1.item2.categoryId, itemId: itemId2 };
         const response = yield (0, supertest_1.default)(app_1.default).put('/shoppinglists').send(data).set(cookie);
-        expect(response.status).toBe(404);
-        expect(response.body).toEqual({ message: 'The active shopping list is not found.' });
+        expect(response.status).toBe(409);
+        expect(response.body).toEqual({ message: 'You tried to add the item which is already in the shopping list.' });
     }));
     test('Successfully changing quantity of the item in the shopping list', () => __awaiter(void 0, void 0, void 0, function* () {
         const data = { shoppingListId: shoppingListId, itemId: itemId, quantity: 3 };

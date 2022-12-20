@@ -102,3 +102,4 @@ export const updateSLStatusValidationSchema = {
         status: Joi.string().required().valid('completed', 'cancelled')
     })
 }
+

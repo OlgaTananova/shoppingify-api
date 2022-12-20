@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.getItemById = exports.getItems = exports.createItem = void 0;
+exports.updateItem = exports.deleteItem = exports.getItemById = exports.getItems = exports.createItem = void 0;
 const item_1 = require("../models/item");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
 const NotFoundError_1 = __importDefault(require("../errors/NotFoundError"));
 const category_1 = require("../models/category");
+const shoppingList_1 = require("../models/shoppingList");
 const createItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, note, image, categoryId } = req.body;
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
@@ -99,3 +100,67 @@ const deleteItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.deleteItem = deleteItem;
+const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { name, note, image, categoryId } = req.body;
+    let updatedItem;
+    let deleteFromCategory;
+    let addToCategory;
+    let updatedShoppingList;
+    try {
+        updatedItem = yield item_1.ItemModel.findOne({ _id: id, owner: owner });
+        const oldCategory = updatedItem ? updatedItem.categoryId.toString() : '';
+        updatedItem = yield item_1.ItemModel.findOneAndUpdate({ _id: id, owner: owner }, {
+            $set: {
+                name: name,
+                note: note,
+                image: image,
+                categoryId: categoryId
+            }
+        }, {
+            new: true
+        });
+        if (!updatedItem) {
+            return new NotFoundError_1.default((0, constants_1.notFoundMessage)('item'));
+        }
+        if (oldCategory !== categoryId) {
+            deleteFromCategory = yield category_1.CategoryModel.findOneAndUpdate({
+                _id: oldCategory,
+                owner: owner
+            }, {
+                $pull: { items: id }
+            }, {
+                new: true
+            });
+            addToCategory = yield category_1.CategoryModel.findOneAndUpdate({
+                _id: categoryId,
+                owner: owner,
+            }, {
+                $addToSet: { items: id }
+            }, {
+                new: true
+            });
+            yield shoppingList_1.ShoppingListModel.updateMany({
+                owner: owner,
+                'items.itemId': updatedItem._id
+            }, {
+                $set: {
+                    'items.$[elem].categoryId': categoryId
+                }
+            }, {
+                arrayFilters: [{ 'elem.itemId': updatedItem._id }],
+                multi: true
+            });
+            updatedShoppingList = yield shoppingList_1.ShoppingListModel.find({
+                owner: owner,
+                'items.itemId': updatedItem._id
+            });
+        }
+        res.send({ updatedItem, deleteFromCategory, addToCategory, updatedShoppingList });
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.updateItem = updateItem;

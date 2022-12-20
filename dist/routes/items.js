@@ -10,4 +10,5 @@ router.post('/items', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.
 router.get('/items', auth_1.auth, items_1.getItems);
 router.get('/items/:id', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.getItemByIdValidationSchema), items_1.getItemById);
 router.delete('/items/:id', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemValidationSchema), items_1.deleteItem);
+router.patch('/items/:id', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.createItemValidationSchema), items_1.updateItem);
 exports.default = router;

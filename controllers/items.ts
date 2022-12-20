@@ -4,6 +4,7 @@ import ConflictError from "../errors/ConflictError";
 import {conflictMessage, notFoundListMessage, notFoundMessage} from "../constants";
 import NotFoundError from "../errors/NotFoundError";
 import {CategoryModel} from "../models/category";
+import {ShoppingListModel} from "../models/shoppingList";
 
 export const createItem = async (req: Request, res: Response, next: NextFunction) => {
     const {name, note, image, categoryId} = req.body;
@@ -77,6 +78,7 @@ export const deleteItem = async (req: Request, res: Response, next: NextFunction
                 'owner': deletedItem.owner
             },
             {$pull: {'items': deletedItem._id}}, {new: true});
+
         if (!updatedCategory) {
             return next(new NotFoundError(notFoundMessage('category')));
         }
@@ -86,3 +88,66 @@ export const deleteItem = async (req: Request, res: Response, next: NextFunction
     }
 }
 
+export const updateItem = async (req: Request, res: Response, next: NextFunction) => {
+    const {id} = req.params;
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {name, note, image, categoryId} = req.body;
+    let updatedItem;
+    let deleteFromCategory;
+    let addToCategory;
+    let updatedShoppingList;
+    try {
+        updatedItem = await ItemModel.findOne({_id: id, owner: owner})
+        const oldCategory = updatedItem? updatedItem!.categoryId.toString() : '';
+        updatedItem = await ItemModel.findOneAndUpdate({_id: id, owner: owner }, {
+            $set: {
+                name: name,
+                note: note,
+                image: image,
+                categoryId: categoryId
+            }
+        },
+            {
+                new: true
+            });
+        if (!updatedItem) {
+            return new NotFoundError(notFoundMessage('item'))
+        }
+        if (oldCategory !== categoryId) {
+            deleteFromCategory = await CategoryModel.findOneAndUpdate({
+              _id: oldCategory,
+              owner: owner
+          }, {
+              $pull: { items:  id }
+          }, {
+              new: true
+          });
+            addToCategory = await CategoryModel.findOneAndUpdate({
+                _id: categoryId,
+                owner: owner,
+            }, {
+                $addToSet: { items: id}
+            }, {
+                new: true
+            });
+            await ShoppingListModel.updateMany({
+                owner: owner,
+                'items.itemId': updatedItem._id
+            }, {
+                $set: {
+                    'items.$[elem].categoryId': categoryId
+                }
+            }, {
+                arrayFilters: [{'elem.itemId': updatedItem._id}],
+                multi: true
+            })
+            updatedShoppingList = await ShoppingListModel.find({
+                owner: owner,
+                'items.itemId': updatedItem._id
+            })
+        }
+        res.send({updatedItem, deleteFromCategory, addToCategory, updatedShoppingList});
+    } catch (err) {
+        next(err);
+    }
+}

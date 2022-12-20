@@ -39,7 +39,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             httpOnly: true,
             maxAge: 6.048e+8,
             sameSite: 'none',
-            secure: false,
+            secure: true,
         });
         res.send({ message: constants_1.tokenSendMessage });
     }
