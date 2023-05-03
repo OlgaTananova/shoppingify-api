@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import {errorLogger, requestLogger} from "./middlewares/logger";
 import helmet from "helmet";
 import {limiter} from "./middlewares/limiter";
+import fileUpload from "express-fileupload";
 
 const app: Express = express();
 
@@ -17,7 +18,8 @@ app.use(cors({
         'https://olgatananova.github.io',
         'http://shoppingify.info',
         'https://shoppingify.info',
-        'http://192.168.1.109:3000'
+        'http://192.168.1.109:3000',
+        'http://192.168.1.109:3001'
     ],
     credentials: true,
 }));
@@ -26,6 +28,8 @@ app.use(requestLogger);
 app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(fileUpload());
+app.use('/upload-bill', express.static('upload-bill'));
 app.use(cookieParser());
 routes(app);
 app.use(errorLogger);

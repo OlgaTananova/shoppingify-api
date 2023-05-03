@@ -95,7 +95,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
     let updatedItem;
     let deleteFromCategory;
     let addToCategory;
-    let updatedShoppingList;
+    let updatedShoppingLists;
     try {
         updatedItem = await ItemModel.findOne({_id: id, owner: owner})
         const oldCategory = updatedItem? updatedItem!.categoryId.toString() : '';
@@ -141,12 +141,11 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
                 arrayFilters: [{'elem.itemId': updatedItem._id}],
                 multi: true
             })
-            updatedShoppingList = await ShoppingListModel.find({
-                owner: owner,
-                'items.itemId': updatedItem._id
+            updatedShoppingLists = await ShoppingListModel.find({
+                owner: owner
             })
         }
-        res.send({updatedItem, deleteFromCategory, addToCategory, updatedShoppingList});
+        res.send({updatedItem, deleteFromCategory, addToCategory, updatedShoppingLists});
     } catch (err) {
         next(err);
     }

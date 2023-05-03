@@ -10,10 +10,17 @@ import {
     createShoppingList,
     getShoppingLists,
     addItemToShoppingList,
-    deleteItemFromShoppingList, changeItemQuantity, changeItemStatus, changeSLHeading, changeSLStatus
+    deleteItemFromShoppingList,
+    changeItemQuantity,
+    changeItemStatus,
+    changeSLHeading,
+    changeSLStatus,
+    uploadBill,
+    mergeLists
 } from '../controllers/shoppingLists';
 import {auth} from "../middlewares/auth";
 import {celebrate} from "celebrate";
+
 
 const router = Router();
 
@@ -27,4 +34,6 @@ router.patch('/shoppinglists/updstatus', auth, celebrate(updateItemStatusInSLVal
 router.patch('/shoppinglists/updheading', auth, celebrate(updateSLHeadingValidationSchema), changeSLHeading);
 router.patch('/shoppinglists/updslstatus', auth, celebrate(updateSLStatusValidationSchema), changeSLStatus);
 router.delete('/shoppinglists', auth, celebrate(deleteItemFromSLValidationSchema), deleteItemFromShoppingList);
+router.post('/upload-bill', auth, uploadBill);
+router.post('/merge-lists', auth, mergeLists)
 export default router;

@@ -12,11 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const shoppingList_1 = require("../models/shoppingList");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
 const NotFoundError_1 = __importDefault(require("../errors/NotFoundError"));
+const pdf_parse_1 = __importDefault(require("pdf-parse"));
+const BadRequestError_1 = __importDefault(require("../errors/BadRequestError"));
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({
+    apiKey: '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'
+});
+const openai = new OpenAIApi(configuration);
 const getShoppingLists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     let shoppingLists;
@@ -61,7 +68,8 @@ const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void
     let updatedShoppingList;
     try {
         updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({ _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $ne: itemId } }, {
-            $push: { items: {
+            $push: {
+                items: {
                     itemId: itemId,
                     categoryId: categoryId,
                     quantity: quantity,
@@ -87,7 +95,8 @@ const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0,
         deletedItem = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
             _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
         }, {
-            $pull: { items: {
+            $pull: {
+                items: {
                     itemId: itemId
                 }
             }
@@ -194,3 +203,46 @@ const changeSLStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.changeSLStatus = changeSLStatus;
+const uploadBill = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const file = (_a = req.files) === null || _a === void 0 ? void 0 : _a.file;
+    if (!file) {
+        return next(new BadRequestError_1.default('No file uploaded'));
+    }
+    try {
+        // @ts-ignore
+        const response = yield (0, pdf_parse_1.default)(file);
+        const requestToGPT = `Make a list of items from the bill: ${response.text}.
+        The final list must contain item with the following properties: itemName 
+        (only essential information, no brands), itemUnits without numbers (if the item is not weighted item, then replace it with pcs),
+        itemQuantity, itemPricePerUnit, itemPrice. In a separate object within the list indicate the date of purchase and sales tax. The list must be in JSON format and must not contain any other information.`;
+        const gptResponse = yield openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: requestToGPT,
+            max_tokens: 2048,
+            temperature: 0,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        if (typeof JSON.parse(gptResponse.data.choices[0].text) !== 'object') {
+            return next(new BadRequestError_1.default('The bill is not valid. Please try again.'));
+        }
+        res.send(gptResponse.data.choices[0].text);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.uploadBill = uploadBill;
+const mergeLists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const updatedSL = req.body.list;
+    try {
+    }
+    catch (err) {
+        // next(err);
+        console.log(err);
+    }
+});
+exports.mergeLists = mergeLists;

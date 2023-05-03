@@ -13,6 +13,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const logger_1 = require("./middlewares/logger");
 const helmet_1 = __importDefault(require("helmet"));
 const limiter_1 = require("./middlewares/limiter");
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: ['http://localhost:3001',
@@ -20,7 +21,8 @@ app.use((0, cors_1.default)({
         'https://olgatananova.github.io',
         'http://shoppingify.info',
         'https://shoppingify.info',
-        'http://192.168.1.109:3000'
+        'http://192.168.1.109:3000',
+        'http://192.168.1.109:3001'
     ],
     credentials: true,
 }));
@@ -29,6 +31,8 @@ app.use(logger_1.requestLogger);
 app.use(limiter_1.limiter);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, express_fileupload_1.default)());
+app.use('/upload-bill', express_1.default.static('upload-bill'));
 app.use((0, cookie_parser_1.default)());
 (0, routes_1.default)(app);
 app.use(logger_1.errorLogger);

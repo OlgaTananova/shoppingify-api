@@ -6,31 +6,40 @@ import {
     notFoundListMessage, notFoundMessage, notUniqueItemErrorMessage,
 } from "../constants";
 import NotFoundError from "../errors/NotFoundError";
+import pdfParse from 'pdf-parse';
+import BadRequestError from "../errors/BadRequestError";
+
+const {Configuration, OpenAIApi} = require("openai");
+
+const configuration = new Configuration({
+    apiKey: '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'
+});
+const openai = new OpenAIApi(configuration);
 
 export const getShoppingLists = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-   let shoppingLists;
-   try {
-       shoppingLists = await ShoppingListModel.find({owner});
-       if (!shoppingLists) {
-           return next(new NotFoundError(notFoundListMessage('shopping lists')));
-       }
-       res.send(shoppingLists)
-   } catch(err) {
-       next(err);
-   }
+    let shoppingLists;
+    try {
+        shoppingLists = await ShoppingListModel.find({owner});
+        if (!shoppingLists) {
+            return next(new NotFoundError(notFoundListMessage('shopping lists')));
+        }
+        res.send(shoppingLists)
+    } catch (err) {
+        next(err);
+    }
 }
 
-export const createShoppingList = async (req: Request, res: Response, next: NextFunction)=>{
+export const createShoppingList = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     const {categoryId, itemId} = req.body;
     let activeShoppingList;
-    try{
+    try {
         activeShoppingList = await ShoppingListModel.findOne({owner: owner, status: 'active'});
         if (activeShoppingList) {
             return next(new ConflictError(conflictMessage('active shopping list')));
         }
-        activeShoppingList = await  ShoppingListModel.create({
+        activeShoppingList = await ShoppingListModel.create({
             owner: owner,
             items: {
                 itemId: itemId,
@@ -38,12 +47,12 @@ export const createShoppingList = async (req: Request, res: Response, next: Next
             }
         });
         res.send(activeShoppingList);
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
 
-export const addItemToShoppingList = async (req: Request, res: Response, next: NextFunction) =>  {
+export const addItemToShoppingList = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     const {shoppingListId, categoryId, itemId, quantity = 1, status = 'pending'} = req.body;
     let updatedShoppingList;
@@ -51,7 +60,8 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate(
             {_id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$ne: itemId}},
             {
-                $push: {items: {
+                $push: {
+                    items: {
                         itemId: itemId,
                         categoryId: categoryId,
                         quantity: quantity,
@@ -61,11 +71,11 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
             },
             {new: true});
         if (!updatedShoppingList) {
-            return next (new ConflictError(notUniqueItemErrorMessage));
+            return next(new ConflictError(notUniqueItemErrorMessage));
         }
         res.send(updatedShoppingList);
-    } catch(err) {
-       next(err);
+    } catch (err) {
+        next(err);
     }
 }
 
@@ -76,8 +86,9 @@ export const deleteItemFromShoppingList = async (req: Request, res: Response, ne
     try {
         deletedItem = await ShoppingListModel.findOneAndUpdate({
             _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
-        },{
-            $pull: {items: {
+        }, {
+            $pull: {
+                items: {
                     itemId: itemId
                 }
             }
@@ -86,7 +97,7 @@ export const deleteItemFromShoppingList = async (req: Request, res: Response, ne
             return next(new NotFoundError(notFoundMessage('item')));
         }
         res.send(deletedItem);
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
@@ -110,7 +121,7 @@ export const changeItemQuantity = async (req: Request, res: Response, next: Next
         }
         res.send(updatedShoppingList);
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
@@ -134,7 +145,7 @@ export const changeItemStatus = async (req: Request, res: Response, next: NextFu
         }
         res.send(updatedShoppingList);
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
@@ -158,12 +169,12 @@ export const changeSLHeading = async (req: Request, res: Response, next: NextFun
         }
         res.send(updatedShoppingList);
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
 
-export const changeSLStatus = async (req: Request, res: Response, next: NextFunction) =>  {
+export const changeSLStatus = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     const {shoppingListId, status} = req.body;
     let updatedShoppingList;
@@ -180,5 +191,47 @@ export const changeSLStatus = async (req: Request, res: Response, next: NextFunc
     } catch (err) {
 
         next(err);
+    }
+}
+
+export const uploadBill = async (req: Request, res: Response, next: NextFunction) => {
+    const file = req.files?.file;
+    if (!file) {
+        return next(new BadRequestError('No file uploaded'));
+    }
+    try {
+        // @ts-ignore
+        const response = await pdfParse(file);
+        const requestToGPT = `Make a list of items from the bill: ${response.text}.
+        The final list must contain item with the following properties: itemName 
+        (only essential information, no brands), itemUnits without numbers (if the item is not weighted item, then replace it with pcs),
+        itemQuantity, itemPricePerUnit, itemPrice. In a separate object within the list indicate the date of purchase and sales tax. The list must be in JSON format and must not contain any other information.`;
+        const gptResponse = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: requestToGPT,
+            max_tokens: 2048,
+            temperature: 0,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+
+        if (typeof JSON.parse(gptResponse.data.choices[0].text) !== 'object') {
+            return next(new BadRequestError('The bill is not valid. Please try again.'));
+        }
+        res.send(gptResponse.data.choices[0].text);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const mergeLists = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const updatedSL = req.body.list;
+    try {
+
+    } catch (err) {
+        // next(err);
+        console.log(err);
     }
 }

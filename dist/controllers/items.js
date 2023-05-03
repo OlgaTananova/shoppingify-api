@@ -107,7 +107,7 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     let updatedItem;
     let deleteFromCategory;
     let addToCategory;
-    let updatedShoppingList;
+    let updatedShoppingLists;
     try {
         updatedItem = yield item_1.ItemModel.findOne({ _id: id, owner: owner });
         const oldCategory = updatedItem ? updatedItem.categoryId.toString() : '';
@@ -152,12 +152,11 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
                 arrayFilters: [{ 'elem.itemId': updatedItem._id }],
                 multi: true
             });
-            updatedShoppingList = yield shoppingList_1.ShoppingListModel.find({
-                owner: owner,
-                'items.itemId': updatedItem._id
+            updatedShoppingLists = yield shoppingList_1.ShoppingListModel.find({
+                owner: owner
             });
         }
-        res.send({ updatedItem, deleteFromCategory, addToCategory, updatedShoppingList });
+        res.send({ updatedItem, deleteFromCategory, addToCategory, updatedShoppingLists });
     }
     catch (err) {
         next(err);
