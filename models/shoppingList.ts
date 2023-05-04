@@ -41,13 +41,29 @@ const shoppingListSchema = new Schema<IShoppingListSchema>({
                 type: String,
                 enum: ['pending', 'completed'],
                 default: 'pending'
+            },
+            units: {
+                type: String,
+                default: 'pcs',
+            },
+            pricePerUnit: {
+                type: Number,
+                default: 0,
+            },
+            price: {
+                type: Number,
+                default: 0,
             }
         }],
     status: {
        type: String,
         required: true,
         default: 'active',
-    }
+    },
+    salesTax: {
+        type: Number,
+        default: 0,
+    },
 });
 
 export const ShoppingListModel = model<IShoppingListSchema>('shoppingList', shoppingListSchema);

@@ -39,12 +39,28 @@ const shoppingListSchema = new mongoose_1.Schema({
                 type: String,
                 enum: ['pending', 'completed'],
                 default: 'pending'
+            },
+            units: {
+                type: String,
+                default: 'pcs',
+            },
+            pricePerUnit: {
+                type: Number,
+                default: 0,
+            },
+            price: {
+                type: Number,
+                default: 0,
             }
         }],
     status: {
         type: String,
         required: true,
         default: 'active',
-    }
+    },
+    salesTax: {
+        type: Number,
+        default: 0,
+    },
 });
 exports.ShoppingListModel = (0, mongoose_1.model)('shoppingList', shoppingListSchema);

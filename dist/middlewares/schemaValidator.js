@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.mergeBillValidationSchema = exports.mergeSLValidationSchema = exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
@@ -89,5 +89,38 @@ exports.updateSLStatusValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         status: celebrate_1.Joi.string().required().valid('completed', 'cancelled')
+    })
+};
+exports.mergeSLValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        items: celebrate_1.Joi.array().items(celebrate_1.Joi.object().keys({
+            categoryId: celebrate_1.Joi.string().hex().length(24).required(),
+            itemId: celebrate_1.Joi.string().hex().length(24).required(),
+            quantity: celebrate_1.Joi.number().required(),
+            status: celebrate_1.Joi.string().allow('pending', 'completed'),
+            itemName: celebrate_1.Joi.string(),
+            units: celebrate_1.Joi.string(),
+            pricePerUnit: celebrate_1.Joi.number().required(),
+            price: celebrate_1.Joi.number().required(),
+            itemCategoryName: celebrate_1.Joi.string(),
+        })),
+        _id: celebrate_1.Joi.string().hex().length(24).required(),
+        salesTax: celebrate_1.Joi.number().required(),
+        date: celebrate_1.Joi.string().required(),
+    })
+};
+exports.mergeBillValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        items: celebrate_1.Joi.array().items(celebrate_1.Joi.object().keys({
+            categoryId: celebrate_1.Joi.string().hex().length(24).required(),
+            itemId: celebrate_1.Joi.string().hex().length(24).required(),
+            quantity: celebrate_1.Joi.number().required(),
+            status: celebrate_1.Joi.string().allow('pending', 'completed'),
+            units: celebrate_1.Joi.string(),
+            pricePerUnit: celebrate_1.Joi.number().required(),
+            price: celebrate_1.Joi.number().required(),
+        })),
+        salesTax: celebrate_1.Joi.number().required(),
+        date: celebrate_1.Joi.string().required(),
     })
 };

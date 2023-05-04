@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const shoppingList_1 = require("../models/shoppingList");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
@@ -237,12 +237,61 @@ const uploadBill = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.uploadBill = uploadBill;
 const mergeLists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const updatedSL = req.body.list;
+    const updatedSL = req.body.items;
+    const salesTax = req.body.salesTax;
+    const date = req.body.date;
+    const shoppingListId = req.body._id;
     try {
+        const mergeShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: {
+                'items': updatedSL.map((item) => {
+                    return {
+                        itemId: item.itemId,
+                        categoryId: item.categoryId,
+                        units: item.units,
+                        quantity: item.quantity,
+                        pricePerUnit: item.pricePerUnit,
+                        price: item.price,
+                        status: item.status
+                    };
+                }),
+                'salesTax': salesTax,
+                'date': new Date(date).toISOString()
+            }
+        }, { new: true });
+        if (!mergeShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list')));
+        }
+        res.send(mergeShoppingList);
     }
     catch (err) {
-        // next(err);
-        console.log(err);
+        next(err);
     }
 });
 exports.mergeLists = mergeLists;
+const uploadList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { items, date, salesTax } = req.body;
+    let activeShoppingList;
+    try {
+        activeShoppingList = yield shoppingList_1.ShoppingListModel.findOne({
+            status: 'active', owner: owner
+        });
+        if (activeShoppingList) {
+            return next(new ConflictError_1.default((0, constants_1.conflictMessage)('active shopping list')));
+        }
+        const newShoppingList = yield shoppingList_1.ShoppingListModel.create({
+            owner: owner,
+            salesTax: salesTax,
+            date: date,
+            items: [...items]
+        });
+        res.send(newShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.uploadList = uploadList;

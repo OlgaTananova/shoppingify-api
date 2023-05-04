@@ -11,9 +11,13 @@ export interface IShoppingList {
             itemId: string,
             categoryId: string,
             quantity?: number,
+            units?: string,
+            pricePerUnit?: number,
+            price?: number,
             status?: 'completed' | 'pending'
         }],
-    status: 'completed' | 'cancelled' | 'active'
+    status: 'completed' | 'cancelled' | 'active',
+    salesTax?: number,
 }
 
 export interface IItem {

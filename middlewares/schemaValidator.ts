@@ -103,3 +103,39 @@ export const updateSLStatusValidationSchema = {
     })
 }
 
+export const mergeSLValidationSchema = {
+    body: Joi.object().keys({
+        items: Joi.array().items(Joi.object().keys({
+            categoryId: Joi.string().hex().length(24).required(),
+            itemId: Joi.string().hex().length(24).required(),
+            quantity: Joi.number().required(),
+            status: Joi.string().allow('pending', 'completed'),
+            itemName: Joi.string(),
+            units: Joi.string(),
+            pricePerUnit: Joi.number().required(),
+            price: Joi.number().required(),
+            itemCategoryName: Joi.string(),
+        })),
+        _id: Joi.string().hex().length(24).required(),
+        salesTax: Joi.number().required(),
+        date: Joi.string().required(),
+    })
+}
+
+export const mergeBillValidationSchema = {
+    body: Joi.object().keys({
+        items: Joi.array().items(Joi.object().keys({
+            categoryId: Joi.string().hex().length(24).required(),
+            itemId: Joi.string().hex().length(24).required(),
+            quantity: Joi.number().required(),
+            status: Joi.string().allow('pending', 'completed'),
+            units: Joi.string(),
+            pricePerUnit: Joi.number().required(),
+            price: Joi.number().required(),
+        })),
+        salesTax: Joi.number().required(),
+        date: Joi.string().required(),
+    })
+}
+
+

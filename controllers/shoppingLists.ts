@@ -227,11 +227,58 @@ export const uploadBill = async (req: Request, res: Response, next: NextFunction
 
 export const mergeLists = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const updatedSL = req.body.list;
+    const updatedSL = req.body.items;
+    const salesTax = req.body.salesTax;
+    const date = req.body.date;
+    const shoppingListId = req.body._id;
     try {
-
+       const mergeShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: {
+                'items': updatedSL.map((item: any) => {
+                    return {
+                        itemId: item.itemId,
+                        categoryId: item.categoryId,
+                        units: item.units,
+                        quantity: item.quantity,
+                        pricePerUnit: item.pricePerUnit,
+                        price: item.price,
+                        status: item.status
+                    }
+                }),
+                'salesTax': salesTax,
+                'date': new Date(date).toISOString()
+            }
+        }, {new: true});
+        if (!mergeShoppingList) {
+            return next(new NotFoundError(notFoundMessage('active shopping list')));
+        }
+        res.send(mergeShoppingList);
     } catch (err) {
-        // next(err);
-        console.log(err);
+        next(err);
+    }
+}
+
+export const uploadList = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {items, date, salesTax} = req.body;
+    let activeShoppingList;
+    try {
+        activeShoppingList = await ShoppingListModel.findOne({
+            status: 'active', owner: owner
+        });
+        if (activeShoppingList) {
+            return next(new ConflictError(conflictMessage('active shopping list')));
+        }
+        const newShoppingList = await ShoppingListModel.create({
+            owner: owner,
+            salesTax: salesTax,
+            date: date,
+            items: [...items]
+        });
+        res.send(newShoppingList)
+    } catch(err) {
+        next(err);
     }
 }

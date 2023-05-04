@@ -15,5 +15,6 @@ router.patch('/shoppinglists/updheading', auth_1.auth, (0, celebrate_1.celebrate
 router.patch('/shoppinglists/updslstatus', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSLStatusValidationSchema), shoppingLists_1.changeSLStatus);
 router.delete('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromSLValidationSchema), shoppingLists_1.deleteItemFromShoppingList);
 router.post('/upload-bill', auth_1.auth, shoppingLists_1.uploadBill);
-router.post('/merge-lists', auth_1.auth, shoppingLists_1.mergeLists);
+router.post('/merge-lists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.mergeSLValidationSchema), shoppingLists_1.mergeLists);
+router.post('/upload-list', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.mergeBillValidationSchema), shoppingLists_1.uploadList);
 exports.default = router;
