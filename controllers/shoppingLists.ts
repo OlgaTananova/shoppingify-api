@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import {Response, Request, NextFunction} from "express";
 import {ShoppingListModel} from '../models/shoppingList';
 import ConflictError from "../errors/ConflictError";
@@ -12,7 +14,7 @@ import BadRequestError from "../errors/BadRequestError";
 const {Configuration, OpenAIApi} = require("openai");
 
 const configuration = new Configuration({
-    apiKey: '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'
+    apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
 
@@ -279,6 +281,30 @@ export const uploadList = async (req: Request, res: Response, next: NextFunction
         });
         res.send(newShoppingList)
     } catch(err) {
+        next(err);
+    }
+}
+
+export const changeItemUnits = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {shoppingListId, itemId, units} = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+        }, {
+            $set: {
+                'items.$.units': units
+            }
+        }, {
+            new: true
+        })
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundMessage('item')));
+        }
+        res.send(updatedShoppingList);
+
+    } catch (err) {
         next(err);
     }
 }

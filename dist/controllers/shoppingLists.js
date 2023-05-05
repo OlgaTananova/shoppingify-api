@@ -12,7 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.changeItemUnits = exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const shoppingList_1 = require("../models/shoppingList");
 const ConflictError_1 = __importDefault(require("../errors/ConflictError"));
 const constants_1 = require("../constants");
@@ -21,7 +23,7 @@ const pdf_parse_1 = __importDefault(require("pdf-parse"));
 const BadRequestError_1 = __importDefault(require("../errors/BadRequestError"));
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
-    apiKey: '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'
+    apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
 const getShoppingLists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -295,3 +297,27 @@ const uploadList = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.uploadList = uploadList;
+const changeItemUnits = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, itemId, units } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+        }, {
+            $set: {
+                'items.$.units': units
+            }
+        }, {
+            new: true
+        });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeItemUnits = changeItemUnits;

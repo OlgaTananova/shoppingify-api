@@ -138,4 +138,11 @@ export const mergeBillValidationSchema = {
     })
 }
 
+export const updateItemUnitsInSLValidationSchema = {
+    body: Joi.object().keys({
+        itemId: Joi.string().hex().length(24).required(),
+        shoppingListId: Joi.string().hex().length(24).required(),
+        units: Joi.string().required()
+    })
+}
 
