@@ -14,8 +14,10 @@ router.patch('/shoppinglists/updstatus', auth_1.auth, (0, celebrate_1.celebrate)
 router.patch('/shoppinglists/updheading', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSLHeadingValidationSchema), shoppingLists_1.changeSLHeading);
 router.patch('/shoppinglists/updslstatus', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSLStatusValidationSchema), shoppingLists_1.changeSLStatus);
 router.patch('/shoppinglists/updItemUnits', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemUnitsInSLValidationSchema), shoppingLists_1.changeItemUnits);
+router.patch('/shoppinglists/updItemPrice', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemPriceInSLValidationSchema), shoppingLists_1.changeItemPrice);
 router.delete('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromSLValidationSchema), shoppingLists_1.deleteItemFromShoppingList);
 router.post('/upload-bill', auth_1.auth, shoppingLists_1.uploadBill);
 router.post('/merge-lists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.mergeSLValidationSchema), shoppingLists_1.mergeLists);
 router.post('/upload-list', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.mergeBillValidationSchema), shoppingLists_1.uploadList);
+router.patch('/shoppinglists/updSalesTax', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateSalesTaxValidationSchema), shoppingLists_1.changeSalesTax);
 exports.default = router;

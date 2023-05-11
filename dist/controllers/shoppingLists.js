@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeItemUnits = exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.changeSalesTax = exports.changeItemPrice = exports.changeItemUnits = exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const shoppingList_1 = require("../models/shoppingList");
@@ -115,14 +115,17 @@ const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0,
 exports.deleteItemFromShoppingList = deleteItemFromShoppingList;
 const changeItemQuantity = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const { shoppingListId, itemId, quantity } = req.body;
+    let { shoppingListId, itemId, quantity, pricePerUnit } = req.body;
+    quantity = Number(quantity);
+    pricePerUnit = Number(pricePerUnit);
     let updatedShoppingList;
     try {
         updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
             _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
         }, {
             $set: {
-                'items.$.quantity': quantity
+                'items.$.quantity': quantity,
+                'items.$.price': pricePerUnit * quantity
             }
         }, {
             new: true
@@ -321,3 +324,50 @@ const changeItemUnits = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.changeItemUnits = changeItemUnits;
+const changeItemPrice = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    let { shoppingListId, itemId, pricePerUnit, quantity } = req.body;
+    pricePerUnit = Number(pricePerUnit);
+    quantity = Number(quantity);
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId },
+        }, {
+            $set: {
+                'items.$.pricePerUnit': pricePerUnit,
+                'items.$.price': pricePerUnit * quantity
+            }
+        }, {
+            new: true
+        });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('item')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeItemPrice = changeItemPrice;
+const changeSalesTax = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { shoppingListId, salesTax } = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: { salesTax: salesTax }
+        }, { new: true });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('active shopping list')));
+        }
+        res.send(updatedShoppingList);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.changeSalesTax = changeSalesTax;

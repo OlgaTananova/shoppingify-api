@@ -77,7 +77,8 @@ export const updateItemQtyInSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
-        quantity: Joi.number().required()
+        quantity: Joi.number().required(),
+        pricePerUnit: Joi.number().required(),
     })
 }
 
@@ -146,3 +147,18 @@ export const updateItemUnitsInSLValidationSchema = {
     })
 }
 
+export const updateItemPriceInSLValidationSchema = {
+    body: Joi.object().keys({
+        itemId: Joi.string().hex().length(24).required(),
+        shoppingListId: Joi.string().hex().length(24).required(),
+        pricePerUnit: Joi.number().required(),
+        quantity: Joi.number().required(),
+    })
+}
+
+export const updateSalesTaxValidationSchema = {
+    body: Joi.object().keys({
+        shoppingListId: Joi.string().hex().length(24).required(),
+        salesTax: Joi.number().required(),
+    })
+}

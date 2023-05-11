@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+
 dotenv.config();
 import {Response, Request, NextFunction} from "express";
 import {ShoppingListModel} from '../models/shoppingList';
@@ -10,6 +11,7 @@ import {
 import NotFoundError from "../errors/NotFoundError";
 import pdfParse from 'pdf-parse';
 import BadRequestError from "../errors/BadRequestError";
+import mongoose from "mongoose";
 
 const {Configuration, OpenAIApi} = require("openai");
 
@@ -106,14 +108,17 @@ export const deleteItemFromShoppingList = async (req: Request, res: Response, ne
 
 export const changeItemQuantity = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const {shoppingListId, itemId, quantity} = req.body;
+    let {shoppingListId, itemId, quantity, pricePerUnit} = req.body;
+    quantity = Number(quantity);
+    pricePerUnit = Number(pricePerUnit);
     let updatedShoppingList;
     try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
             _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
         }, {
             $set: {
-                'items.$.quantity': quantity
+                'items.$.quantity': quantity,
+                'items.$.price': pricePerUnit * quantity
             }
         }, {
             new: true
@@ -234,7 +239,7 @@ export const mergeLists = async (req: Request, res: Response, next: NextFunction
     const date = req.body.date;
     const shoppingListId = req.body._id;
     try {
-       const mergeShoppingList = await ShoppingListModel.findOneAndUpdate({
+        const mergeShoppingList = await ShoppingListModel.findOneAndUpdate({
             _id: shoppingListId, status: 'active', owner: owner
         }, {
             $set: {
@@ -280,7 +285,7 @@ export const uploadList = async (req: Request, res: Response, next: NextFunction
             items: [...items]
         });
         res.send(newShoppingList)
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
@@ -304,6 +309,52 @@ export const changeItemUnits = async (req: Request, res: Response, next: NextFun
         }
         res.send(updatedShoppingList);
 
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const changeItemPrice = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    let {shoppingListId, itemId, pricePerUnit, quantity} = req.body;
+    pricePerUnit = Number(pricePerUnit);
+    quantity = Number(quantity);
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId},
+        }, {
+            $set: {
+                'items.$.pricePerUnit': pricePerUnit,
+                'items.$.price': pricePerUnit * quantity
+            }
+        }, {
+            new: true
+        });
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundMessage('item')));
+        }
+
+        res.send(updatedShoppingList);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const changeSalesTax = async (req: Request, res: Response, next: NextFunction) => {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const {shoppingListId, salesTax} = req.body;
+    let updatedShoppingList;
+    try {
+        updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
+            _id: shoppingListId, status: 'active', owner: owner
+        }, {
+            $set: {salesTax: salesTax}
+        }, {new: true});
+        if (!updatedShoppingList) {
+            return next(new NotFoundError(notFoundMessage('active shopping list')));
+        }
+        res.send(updatedShoppingList);
     } catch (err) {
         next(err);
     }

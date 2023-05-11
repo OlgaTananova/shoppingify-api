@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateItemUnitsInSLValidationSchema = exports.mergeBillValidationSchema = exports.mergeSLValidationSchema = exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.updateSalesTaxValidationSchema = exports.updateItemPriceInSLValidationSchema = exports.updateItemUnitsInSLValidationSchema = exports.mergeBillValidationSchema = exports.mergeSLValidationSchema = exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
@@ -69,7 +69,8 @@ exports.updateItemQtyInSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
-        quantity: celebrate_1.Joi.number().required()
+        quantity: celebrate_1.Joi.number().required(),
+        pricePerUnit: celebrate_1.Joi.number().required(),
     })
 };
 exports.updateItemStatusInSLValidationSchema = {
@@ -129,5 +130,19 @@ exports.updateItemUnitsInSLValidationSchema = {
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         units: celebrate_1.Joi.string().required()
+    })
+};
+exports.updateItemPriceInSLValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+        pricePerUnit: celebrate_1.Joi.number().required(),
+        quantity: celebrate_1.Joi.number().required(),
+    })
+};
+exports.updateSalesTaxValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
+        salesTax: celebrate_1.Joi.number().required(),
     })
 };
