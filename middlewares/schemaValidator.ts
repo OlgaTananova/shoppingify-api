@@ -128,6 +128,7 @@ export const mergeBillValidationSchema = {
         items: Joi.array().items(Joi.object().keys({
             categoryId: Joi.string().hex().length(24).required(),
             itemId: Joi.string().hex().length(24).required(),
+            itemName: Joi.string(),
             quantity: Joi.number().required(),
             status: Joi.string().allow('pending', 'completed'),
             units: Joi.string(),

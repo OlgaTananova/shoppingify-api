@@ -32,6 +32,10 @@ const shoppingListSchema = new Schema<IShoppingListSchema>({
                 ref: 'category',
                 required: true,
             },
+            itemName: {
+                type: String,
+                default: '',
+            },
             quantity: {
                 type: Number,
                 default: 1,
