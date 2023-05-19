@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeSalesTax = exports.changeItemPrice = exports.changeItemUnits = exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
+exports.deleteShoppingList = exports.changeSalesTax = exports.changeItemPrice = exports.changeItemUnits = exports.uploadList = exports.mergeLists = exports.uploadBill = exports.changeSLStatus = exports.changeSLHeading = exports.changeItemStatus = exports.changeItemQuantity = exports.deleteItemFromShoppingList = exports.addItemToShoppingList = exports.createShoppingList = exports.getShoppingLists = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const shoppingList_1 = require("../models/shoppingList");
@@ -371,3 +371,19 @@ const changeSalesTax = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.changeSalesTax = changeSalesTax;
+const deleteShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const owner = (req.user && typeof req.user === 'object') && req.user._id;
+    const { id } = req.body;
+    let activeShoppingList;
+    try {
+        activeShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndDelete({ owner: owner, _id: id, status: 'active' });
+        if (!activeShoppingList) {
+            return next(new NotFoundError_1.default('There is no active shopping list.'));
+        }
+        res.send({ message: "Shopping list deleted." });
+    }
+    catch (err) {
+        next(err);
+    }
+});
+exports.deleteShoppingList = deleteShoppingList;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSalesTaxValidationSchema = exports.updateItemPriceInSLValidationSchema = exports.updateItemUnitsInSLValidationSchema = exports.mergeBillValidationSchema = exports.mergeSLValidationSchema = exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
+exports.deleteSLValidationSchema = exports.updateSalesTaxValidationSchema = exports.updateItemPriceInSLValidationSchema = exports.updateItemUnitsInSLValidationSchema = exports.mergeBillValidationSchema = exports.mergeSLValidationSchema = exports.updateSLStatusValidationSchema = exports.updateSLHeadingValidationSchema = exports.updateItemStatusInSLValidationSchema = exports.updateItemQtyInSLValidationSchema = exports.deleteItemFromSLValidationSchema = exports.addItemToShoppingListValidationSchema = exports.createShoppingListValidationSchema = exports.updateUserValidationSchema = exports.loginValidationSchema = exports.createUserValidationSchema = exports.deleteItemValidationSchema = exports.getItemByIdValidationSchema = exports.createItemValidationSchema = exports.createCategoryValidationSchema = void 0;
 const celebrate_1 = require("celebrate");
 exports.createCategoryValidationSchema = {
     body: celebrate_1.Joi.object().keys({
@@ -115,6 +115,7 @@ exports.mergeBillValidationSchema = {
         items: celebrate_1.Joi.array().items(celebrate_1.Joi.object().keys({
             categoryId: celebrate_1.Joi.string().hex().length(24).required(),
             itemId: celebrate_1.Joi.string().hex().length(24).required(),
+            itemName: celebrate_1.Joi.string(),
             quantity: celebrate_1.Joi.number().required(),
             status: celebrate_1.Joi.string().allow('pending', 'completed'),
             units: celebrate_1.Joi.string(),
@@ -144,5 +145,10 @@ exports.updateSalesTaxValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         salesTax: celebrate_1.Joi.number().required(),
+    })
+};
+exports.deleteSLValidationSchema = {
+    body: celebrate_1.Joi.object().keys({
+        id: celebrate_1.Joi.string().hex().length(24).required(),
     })
 };

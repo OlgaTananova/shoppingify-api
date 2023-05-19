@@ -163,3 +163,9 @@ export const updateSalesTaxValidationSchema = {
         salesTax: Joi.number().required(),
     })
 }
+
+export const deleteSLValidationSchema = {
+    body: Joi.object().keys({
+        id: Joi.string().hex().length(24).required(),
+    })
+}

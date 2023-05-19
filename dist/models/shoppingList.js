@@ -30,6 +30,10 @@ const shoppingListSchema = new mongoose_1.Schema({
                 ref: 'category',
                 required: true,
             },
+            itemName: {
+                type: String,
+                default: '',
+            },
             quantity: {
                 type: Number,
                 default: 1,

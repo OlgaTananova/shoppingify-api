@@ -2,7 +2,7 @@ import {Router} from 'express';
 import {
     addItemToShoppingListValidationSchema,
     createShoppingListValidationSchema,
-    deleteItemFromSLValidationSchema,
+    deleteItemFromSLValidationSchema, deleteSLValidationSchema,
     mergeBillValidationSchema,
     mergeSLValidationSchema, updateItemPriceInSLValidationSchema,
     updateItemQtyInSLValidationSchema,
@@ -20,7 +20,7 @@ import {
     changeSLHeading,
     changeSLStatus,
     uploadBill,
-    mergeLists, uploadList, changeItemUnits, changeItemPrice, changeSalesTax
+    mergeLists, uploadList, changeItemUnits, changeItemPrice, changeSalesTax, deleteShoppingList
 } from '../controllers/shoppingLists';
 import {auth} from "../middlewares/auth";
 import {celebrate} from "celebrate";
@@ -40,6 +40,7 @@ router.patch('/shoppinglists/updslstatus', auth, celebrate(updateSLStatusValidat
 router.patch('/shoppinglists/updItemUnits', auth,celebrate(updateItemUnitsInSLValidationSchema), changeItemUnits);
 router.patch('/shoppinglists/updItemPrice', auth, celebrate(updateItemPriceInSLValidationSchema), changeItemPrice);
 router.delete('/shoppinglists', auth, celebrate(deleteItemFromSLValidationSchema), deleteItemFromShoppingList);
+router.delete('/shoppinglists/deleteList', auth, celebrate(deleteSLValidationSchema), deleteShoppingList);
 router.post('/upload-bill', auth, uploadBill);
 router.post('/merge-lists', auth, celebrate(mergeSLValidationSchema), mergeLists);
 router.post('/upload-list', auth, celebrate (mergeBillValidationSchema), uploadList);

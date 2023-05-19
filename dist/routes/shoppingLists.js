@@ -16,6 +16,7 @@ router.patch('/shoppinglists/updslstatus', auth_1.auth, (0, celebrate_1.celebrat
 router.patch('/shoppinglists/updItemUnits', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemUnitsInSLValidationSchema), shoppingLists_1.changeItemUnits);
 router.patch('/shoppinglists/updItemPrice', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.updateItemPriceInSLValidationSchema), shoppingLists_1.changeItemPrice);
 router.delete('/shoppinglists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteItemFromSLValidationSchema), shoppingLists_1.deleteItemFromShoppingList);
+router.delete('/shoppinglists/deleteList', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.deleteSLValidationSchema), shoppingLists_1.deleteShoppingList);
 router.post('/upload-bill', auth_1.auth, shoppingLists_1.uploadBill);
 router.post('/merge-lists', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.mergeSLValidationSchema), shoppingLists_1.mergeLists);
 router.post('/upload-list', auth_1.auth, (0, celebrate_1.celebrate)(schemaValidator_1.mergeBillValidationSchema), shoppingLists_1.uploadList);
