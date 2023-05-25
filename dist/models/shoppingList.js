@@ -23,7 +23,6 @@ const shoppingListSchema = new mongoose_1.Schema({
                 type: mongoose_1.Schema.Types.ObjectId,
                 ref: 'item',
                 required: true,
-                unique: true,
             },
             categoryId: {
                 type: mongoose_1.Schema.Types.ObjectId,

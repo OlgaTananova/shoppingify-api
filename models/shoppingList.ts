@@ -25,7 +25,6 @@ const shoppingListSchema = new Schema<IShoppingListSchema>({
                 type: Schema.Types.ObjectId,
                 ref: 'item',
                 required: true,
-                unique: true,
             },
             categoryId: {
                 type: Schema.Types.ObjectId,

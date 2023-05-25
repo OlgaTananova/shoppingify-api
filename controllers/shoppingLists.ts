@@ -62,7 +62,7 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
     let updatedShoppingList;
     try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate(
-            {_id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$ne: itemId}},
+            {_id: shoppingListId, status: 'active', owner: owner},
             {
                 $push: {
                     items: {
@@ -75,7 +75,7 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
             },
             {new: true});
         if (!updatedShoppingList) {
-            return next(new ConflictError(notUniqueItemErrorMessage));
+            return next(new NotFoundError(notFoundMessage('shopping list')));
         }
         res.send(updatedShoppingList);
     } catch (err) {

@@ -69,7 +69,7 @@ const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void
     const { shoppingListId, categoryId, itemId, quantity = 1, status = 'pending' } = req.body;
     let updatedShoppingList;
     try {
-        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({ _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $ne: itemId } }, {
+        updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({ _id: shoppingListId, status: 'active', owner: owner }, {
             $push: {
                 items: {
                     itemId: itemId,
@@ -80,7 +80,7 @@ const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void
             }
         }, { new: true });
         if (!updatedShoppingList) {
-            return next(new ConflictError_1.default(constants_1.notUniqueItemErrorMessage));
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('shopping list')));
         }
         res.send(updatedShoppingList);
     }
