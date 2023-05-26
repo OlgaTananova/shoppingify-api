@@ -363,11 +363,11 @@ export const changeSalesTax = async (req: Request, res: Response, next: NextFunc
 export const deleteShoppingList = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     const {id} = req.body;
-    let activeShoppingList;
+    let shoppingList;
     try {
-        activeShoppingList = await ShoppingListModel.findOneAndDelete({owner: owner, _id: id, status: 'active'});
-        if (!activeShoppingList) {
-            return next(new NotFoundError('There is no active shopping list.'));
+        shoppingList = await ShoppingListModel.findOneAndDelete({owner: owner, _id: id});
+        if (!shoppingList) {
+            return next(new NotFoundError(notFoundMessage('shopping list')));
         }
         res.send({message: "Shopping list deleted."});
     } catch (err) {

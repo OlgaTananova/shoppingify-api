@@ -374,11 +374,11 @@ exports.changeSalesTax = changeSalesTax;
 const deleteShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
     const { id } = req.body;
-    let activeShoppingList;
+    let shoppingList;
     try {
-        activeShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndDelete({ owner: owner, _id: id, status: 'active' });
-        if (!activeShoppingList) {
-            return next(new NotFoundError_1.default('There is no active shopping list.'));
+        shoppingList = yield shoppingList_1.ShoppingListModel.findOneAndDelete({ owner: owner, _id: id });
+        if (!shoppingList) {
+            return next(new NotFoundError_1.default((0, constants_1.notFoundMessage)('shopping list')));
         }
         res.send({ message: "Shopping list deleted." });
     }
