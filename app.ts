@@ -16,8 +16,8 @@ app.use(cors({
         'https://olgatananova.github.io',
         'http://shoppingify.info',
         'https://shoppingify.info',
-        'http://192.168.1.109:3000',
-        'http://192.168.1.109:3001'
+        'http://192.168.0.193:3000',
+        'http://172.20.10.6:3000'
     ],
     credentials: true,
 }));
