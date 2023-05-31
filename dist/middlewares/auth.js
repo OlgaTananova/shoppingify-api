@@ -23,17 +23,17 @@ let JWT_SECRET = process.env["JWT_SECRET"];
 const secretKey = NODE_ENV === 'production' && JWT_SECRET || constants_1.publicKey;
 const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.jwt;
-    const url = req.url;
-    if (url === 'http://localhost:3000' || 'http://172.20.10.6:3000') {
-        req.user = { _id: '639f99ac8639ee8000f0ac90', iat: 1621576800, exp: 1622181600 };
-        next();
+    // console.log(token);
+    // const url = req.url;
+    // if (url === 'http://localhost:3000' || 'http://172.20.10.6:3000' || 'http://192.168.0.193:3000') {
+    //     req.user = {_id: '639f99ac8639ee8000f0ac90', iat: 1621576800, exp: 1622181600};
+    //     next();
+    // } else {
+    if (!token) {
+        return next(new UnauthorizedError_1.default(constants_1.unauthorizedMessage));
     }
-    else {
-        if (!token) {
-            return next(new UnauthorizedError_1.default(constants_1.unauthorizedMessage));
-        }
-        req.user = jsonwebtoken_1.default.verify(token, secretKey);
-        next();
-    }
+    req.user = jsonwebtoken_1.default.verify(token, secretKey);
+    next();
+    // }
 });
 exports.auth = auth;
