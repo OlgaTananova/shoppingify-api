@@ -23,6 +23,7 @@ app.use((0, cors_1.default)({
         'http://172.20.10.6:3000'
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }));
 app.use((0, helmet_1.default)());
 app.use(logger_1.requestLogger);
@@ -30,8 +31,8 @@ app.use(limiter_1.limiter);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, express_fileupload_1.default)());
-app.use('/upload-bill', express_1.default.static('upload-bill'));
 app.use((0, cookie_parser_1.default)());
+app.use('/upload-bill', express_1.default.static('upload-bill'));
 (0, routes_1.default)(app);
 app.use(logger_1.errorLogger);
 app.use(errorHandler_1.celebrateErrorHandler);

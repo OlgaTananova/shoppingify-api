@@ -20,6 +20,7 @@ app.use(cors({
         'http://172.20.10.6:3000'
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }));
 app.use(helmet());
 app.use(requestLogger);
@@ -27,8 +28,8 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(fileUpload());
-app.use('/upload-bill', express.static('upload-bill'));
 app.use(cookieParser());
+app.use('/upload-bill', express.static('upload-bill'));
 routes(app);
 app.use(errorLogger);
 app.use(celebrateErrorHandler);
