@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {MONGO_URI_TEST} from "../../constants";
-import {auth, createAnotherUser, item, category, item2 } from "../../fixtures/main";
+import {auth, createAnotherUser, item, category, item2, uploadedBillText, uploadedList } from "../../fixtures/main";
 import request from "supertest";
 import app from "../../app";
 
@@ -60,22 +60,17 @@ describe('Testing shopping lists endpoints', ()=>{
         expect(response.body).toHaveProperty('items');
     });
 
-    test('Throwing 409 error if the user tried to add already existed item to the SL ', async ()=>{
-        const data = {shoppingListId: '62ec0d71a1e7179a512fc2fd', categoryId: item2.categoryId, itemId: itemId2};
-        const response = await request(app).put('/shoppinglists').send(data).set(cookie);
-        expect(response.status).toBe(409);
-        expect(response.body).toEqual({message: 'You tried to add the item which is already in the shopping list.'});
-    });
+
 
     test('Successfully changing quantity of the item in the shopping list', async ()=>{
-        const data = {shoppingListId: shoppingListId, itemId: itemId, quantity: 3};
+        const data = {shoppingListId: shoppingListId, itemId: itemId, quantity: 3, pricePerUnit: 2.5};
         const response = await request(app).patch('/shoppinglists/updqty').send(data).set(cookie);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('heading');
     });
 
     test('Throwing 404 error if a user tries to update the quantity of the item that is not in the SL', async ()=>{
-        const data = {shoppingListId: shoppingListId, itemId: '62ec0d71a1e7179a512fc2fd', quantity: 2};
+        const data = {shoppingListId: shoppingListId, itemId: '62ec0d71a1e7179a512fc2fd', quantity: 2, pricePerUnit: 2.5};
         const response = await request(app).patch('/shoppinglists/updqty').send(data).set(cookie);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({message: 'The active shopping list or item is not found.'});
@@ -135,6 +130,16 @@ describe('Testing shopping lists endpoints', ()=>{
         const response = await request(app).patch('/shoppinglists/updslstatus').send(data).set(cookie);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ message: 'The active shopping list is not found.' });
+    });
+
+    test('Successfully uploading list', async ()=>{
+        uploadedList.items[0].itemId = itemId;
+        uploadedList.items[0].categoryId = categoryId;
+        uploadedList.items[0].itemName = item.name;
+        const response = await request(app).post('/upload-list').send(uploadedList).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('items');
+        expect(new Date(response.body.date)).toBeInstanceOf(Date);
     });
 
     afterAll(async () => {

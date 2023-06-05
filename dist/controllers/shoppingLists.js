@@ -220,7 +220,7 @@ const uploadBill = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const requestToGPT = `Make a list of items from the bill: ${response.text}.
         The final list must contain item with the following properties: itemName 
         (only essential information, no brands), itemUnits without numbers (if the item is not weighted item, then replace it with pcs),
-        itemQuantity, itemPricePerUnit, itemPrice. In a separate object within the list indicate the date of purchase and sales tax. The list must be in JSON format and must not contain any other information.`;
+        itemQuantity, itemPricePerUnit, itemPrice. In a separate object within the list indicate the date of purchase (in the following format: May 31, 2023) and sales tax. The list must be in JSON format and must not contain any other information.`;
         const gptResponse = yield openai.createCompletion({
             model: "text-davinci-003",
             prompt: requestToGPT,
@@ -263,7 +263,7 @@ const mergeLists = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
                     };
                 }),
                 'salesTax': salesTax,
-                'date': new Date(date).toISOString()
+                'date': Number.isNaN(new Date(date).getTime()) ? new Date().toISOString() : new Date(date).toISOString()
             }
         }, { new: true });
         if (!mergeShoppingList) {
@@ -290,7 +290,7 @@ const uploadList = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const newShoppingList = yield shoppingList_1.ShoppingListModel.create({
             owner: owner,
             salesTax: salesTax,
-            date: date,
+            date: Number.isNaN(new Date(date).getTime()) ? new Date().toISOString() : new Date(date).toISOString(),
             items: [...items]
         });
         res.send(newShoppingList);

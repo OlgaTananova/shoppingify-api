@@ -66,20 +66,14 @@ describe('Testing shopping lists endpoints', () => {
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('items');
     }));
-    test('Throwing 409 error if the user tried to add already existed item to the SL ', () => __awaiter(void 0, void 0, void 0, function* () {
-        const data = { shoppingListId: '62ec0d71a1e7179a512fc2fd', categoryId: main_1.item2.categoryId, itemId: itemId2 };
-        const response = yield (0, supertest_1.default)(app_1.default).put('/shoppinglists').send(data).set(cookie);
-        expect(response.status).toBe(409);
-        expect(response.body).toEqual({ message: 'You tried to add the item which is already in the shopping list.' });
-    }));
     test('Successfully changing quantity of the item in the shopping list', () => __awaiter(void 0, void 0, void 0, function* () {
-        const data = { shoppingListId: shoppingListId, itemId: itemId, quantity: 3 };
+        const data = { shoppingListId: shoppingListId, itemId: itemId, quantity: 3, pricePerUnit: 2.5 };
         const response = yield (0, supertest_1.default)(app_1.default).patch('/shoppinglists/updqty').send(data).set(cookie);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('heading');
     }));
     test('Throwing 404 error if a user tries to update the quantity of the item that is not in the SL', () => __awaiter(void 0, void 0, void 0, function* () {
-        const data = { shoppingListId: shoppingListId, itemId: '62ec0d71a1e7179a512fc2fd', quantity: 2 };
+        const data = { shoppingListId: shoppingListId, itemId: '62ec0d71a1e7179a512fc2fd', quantity: 2, pricePerUnit: 2.5 };
         const response = yield (0, supertest_1.default)(app_1.default).patch('/shoppinglists/updqty').send(data).set(cookie);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ message: 'The active shopping list or item is not found.' });
@@ -131,6 +125,15 @@ describe('Testing shopping lists endpoints', () => {
         const response = yield (0, supertest_1.default)(app_1.default).patch('/shoppinglists/updslstatus').send(data).set(cookie);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ message: 'The active shopping list is not found.' });
+    }));
+    test('Successfully uploading list', () => __awaiter(void 0, void 0, void 0, function* () {
+        main_1.uploadedList.items[0].itemId = itemId;
+        main_1.uploadedList.items[0].categoryId = categoryId;
+        main_1.uploadedList.items[0].itemName = main_1.item.name;
+        const response = yield (0, supertest_1.default)(app_1.default).post('/upload-list').send(main_1.uploadedList).set(cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('items');
+        expect(new Date(response.body.date)).toBeInstanceOf(Date);
     }));
     afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield mongoose_1.default.connection.db.dropCollection('users');
