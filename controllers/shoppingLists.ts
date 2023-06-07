@@ -215,16 +215,14 @@ export const uploadBill = async (req: Request, res: Response, next: NextFunction
         const gptResponse = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: requestToGPT,
-            max_tokens: 2048,
+            max_tokens: 3000,
             temperature: 0,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
-        console.log(gptResponse)
         res.send(gptResponse.data.choices[0].text);
     } catch (err) {
-       console.log(err);
        next(err);
     }
 }
