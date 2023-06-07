@@ -23,7 +23,6 @@ app.use((0, cors_1.default)({
         'http://172.20.10.6:3000'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }));
 app.use((0, helmet_1.default)());
 app.use(logger_1.requestLogger);

@@ -20,7 +20,6 @@ app.use(cors({
         'http://172.20.10.6:3000'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }));
 app.use(helmet());
 app.use(requestLogger);

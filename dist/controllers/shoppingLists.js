@@ -220,7 +220,7 @@ const uploadBill = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const requestToGPT = `Make a list of items from the bill: ${response.text}.
         The final list must contain item with the following properties: itemName 
         (only essential information, no brands), itemUnits without numbers (if the item is not weighted item, then replace it with pcs),
-        itemQuantity, itemPricePerUnit, itemPrice. In a separate object within the list indicate the date of purchase (in the following format: May 31, 2023) and sales tax. The list must be in JSON format and must not contain any other information.`;
+        itemQuantity, itemPricePerUnit, itemPrice. In a separate object within the list of items indicate the date of purchase (in the following format: May 31, 2023) and sales tax. The list must be in JSON format and must not contain any other information.`;
         const gptResponse = yield openai.createCompletion({
             model: "text-davinci-003",
             prompt: requestToGPT,
@@ -230,12 +230,11 @@ const uploadBill = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
-        if (typeof JSON.parse(gptResponse.data.choices[0].text) !== 'object') {
-            return next(new BadRequestError_1.default('The bill is not valid. Please try again.'));
-        }
+        console.log(gptResponse);
         res.send(gptResponse.data.choices[0].text);
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 });
