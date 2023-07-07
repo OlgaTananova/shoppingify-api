@@ -91,15 +91,15 @@ const addItemToShoppingList = (req, res, next) => __awaiter(void 0, void 0, void
 exports.addItemToShoppingList = addItemToShoppingList;
 const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const { shoppingListId, itemId } = req.body;
+    const { shoppingListId, _id } = req.body;
     let deletedItem;
     try {
         deletedItem = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': { $eq: _id }
         }, {
             $pull: {
                 items: {
-                    itemId: itemId
+                    _id: _id
                 }
             }
         }, { new: true });
@@ -115,13 +115,13 @@ const deleteItemFromShoppingList = (req, res, next) => __awaiter(void 0, void 0,
 exports.deleteItemFromShoppingList = deleteItemFromShoppingList;
 const changeItemQuantity = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    let { shoppingListId, itemId, quantity, pricePerUnit } = req.body;
+    let { shoppingListId, _id, quantity, pricePerUnit } = req.body;
     quantity = Number(quantity);
     pricePerUnit = Number(pricePerUnit);
     let updatedShoppingList;
     try {
         updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': { $eq: _id }
         }, {
             $set: {
                 'items.$.quantity': quantity,
@@ -142,11 +142,11 @@ const changeItemQuantity = (req, res, next) => __awaiter(void 0, void 0, void 0,
 exports.changeItemQuantity = changeItemQuantity;
 const changeItemStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const { shoppingListId, itemId, status } = req.body;
+    const { shoppingListId, _id, status } = req.body;
     let updatedShoppingList;
     try {
         updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': { $eq: _id }
         }, {
             $set: {
                 'items.$.status': status
@@ -224,17 +224,15 @@ const uploadBill = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const gptResponse = yield openai.createCompletion({
             model: "text-davinci-003",
             prompt: requestToGPT,
-            max_tokens: 2048,
+            max_tokens: 3000,
             temperature: 0,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
-        console.log(gptResponse);
         res.send(gptResponse.data.choices[0].text);
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 });
@@ -301,11 +299,11 @@ const uploadList = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.uploadList = uploadList;
 const changeItemUnits = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const { shoppingListId, itemId, units } = req.body;
+    const { shoppingListId, _id, units } = req.body;
     let updatedShoppingList;
     try {
         updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId }
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': { $eq: _id }
         }, {
             $set: {
                 'items.$.units': units
@@ -325,13 +323,13 @@ const changeItemUnits = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 exports.changeItemUnits = changeItemUnits;
 const changeItemPrice = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    let { shoppingListId, itemId, pricePerUnit, quantity } = req.body;
+    let { shoppingListId, _id, pricePerUnit, quantity } = req.body;
     pricePerUnit = Number(pricePerUnit);
     quantity = Number(quantity);
     let updatedShoppingList;
     try {
         updatedShoppingList = yield shoppingList_1.ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': { $eq: itemId },
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': { $eq: _id },
         }, {
             $set: {
                 'items.$.pricePerUnit': pricePerUnit,

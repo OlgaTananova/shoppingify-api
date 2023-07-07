@@ -62,12 +62,14 @@ exports.addItemToShoppingListValidationSchema = {
 exports.deleteItemFromSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        _id: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
     })
 };
 exports.updateItemQtyInSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        _id: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         quantity: celebrate_1.Joi.number().required(),
         pricePerUnit: celebrate_1.Joi.number().required(),
@@ -76,6 +78,7 @@ exports.updateItemQtyInSLValidationSchema = {
 exports.updateItemStatusInSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        _id: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         status: celebrate_1.Joi.string().required().valid('pending', 'completed')
     })
@@ -129,6 +132,7 @@ exports.mergeBillValidationSchema = {
 exports.updateItemUnitsInSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        _id: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         units: celebrate_1.Joi.string().required()
     })
@@ -136,6 +140,7 @@ exports.updateItemUnitsInSLValidationSchema = {
 exports.updateItemPriceInSLValidationSchema = {
     body: celebrate_1.Joi.object().keys({
         itemId: celebrate_1.Joi.string().hex().length(24).required(),
+        _id: celebrate_1.Joi.string().hex().length(24).required(),
         shoppingListId: celebrate_1.Joi.string().hex().length(24).required(),
         pricePerUnit: celebrate_1.Joi.number().required(),
         quantity: celebrate_1.Joi.number().required(),

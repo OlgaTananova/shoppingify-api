@@ -69,6 +69,7 @@ export const addItemToShoppingListValidationSchema = {
 export const deleteItemFromSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
+        _id: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
     })
 }
@@ -76,6 +77,7 @@ export const deleteItemFromSLValidationSchema = {
 export const updateItemQtyInSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
+        _id: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
         quantity: Joi.number().required(),
         pricePerUnit: Joi.number().required(),
@@ -85,6 +87,7 @@ export const updateItemQtyInSLValidationSchema = {
 export const updateItemStatusInSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
+        _id: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
         status: Joi.string().required().valid('pending', 'completed')
     })
@@ -143,6 +146,7 @@ export const mergeBillValidationSchema = {
 export const updateItemUnitsInSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
+        _id: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
         units: Joi.string().required()
     })
@@ -151,6 +155,7 @@ export const updateItemUnitsInSLValidationSchema = {
 export const updateItemPriceInSLValidationSchema = {
     body: Joi.object().keys({
         itemId: Joi.string().hex().length(24).required(),
+        _id: Joi.string().hex().length(24).required(),
         shoppingListId: Joi.string().hex().length(24).required(),
         pricePerUnit: Joi.number().required(),
         quantity: Joi.number().required(),

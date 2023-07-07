@@ -84,15 +84,15 @@ export const addItemToShoppingList = async (req: Request, res: Response, next: N
 
 export const deleteItemFromShoppingList = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const {shoppingListId, itemId} = req.body;
+    const {shoppingListId, _id} = req.body;
     let deletedItem;
     try {
         deletedItem = await ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': {$eq: _id}
         }, {
             $pull: {
                 items: {
-                    itemId: itemId
+                    _id: _id
                 }
             }
         }, {new: true});
@@ -107,13 +107,13 @@ export const deleteItemFromShoppingList = async (req: Request, res: Response, ne
 
 export const changeItemQuantity = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    let {shoppingListId, itemId, quantity, pricePerUnit} = req.body;
+    let {shoppingListId, _id, quantity, pricePerUnit} = req.body;
     quantity = Number(quantity);
     pricePerUnit = Number(pricePerUnit);
     let updatedShoppingList;
     try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': {$eq: _id}
         }, {
             $set: {
                 'items.$.quantity': quantity,
@@ -134,11 +134,11 @@ export const changeItemQuantity = async (req: Request, res: Response, next: Next
 
 export const changeItemStatus = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const {shoppingListId, itemId, status} = req.body;
+    const {shoppingListId, _id, status} = req.body;
     let updatedShoppingList;
     try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': {$eq: _id}
         }, {
             $set: {
                 'items.$.status': status
@@ -287,11 +287,11 @@ export const uploadList = async (req: Request, res: Response, next: NextFunction
 
 export const changeItemUnits = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    const {shoppingListId, itemId, units} = req.body;
+    const {shoppingListId, _id, units} = req.body;
     let updatedShoppingList;
     try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId}
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': {$eq: _id}
         }, {
             $set: {
                 'items.$.units': units
@@ -311,13 +311,13 @@ export const changeItemUnits = async (req: Request, res: Response, next: NextFun
 
 export const changeItemPrice = async (req: Request, res: Response, next: NextFunction) => {
     const owner = (req.user && typeof req.user === 'object') && req.user._id;
-    let {shoppingListId, itemId, pricePerUnit, quantity} = req.body;
+    let {shoppingListId, _id, pricePerUnit, quantity} = req.body;
     pricePerUnit = Number(pricePerUnit);
     quantity = Number(quantity);
     let updatedShoppingList;
     try {
         updatedShoppingList = await ShoppingListModel.findOneAndUpdate({
-            _id: shoppingListId, status: 'active', owner: owner, 'items.itemId': {$eq: itemId},
+            _id: shoppingListId, status: 'active', owner: owner, 'items._id': {$eq: _id},
         }, {
             $set: {
                 'items.$.pricePerUnit': pricePerUnit,
